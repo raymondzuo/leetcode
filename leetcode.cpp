@@ -441,6 +441,43 @@ int minMeetingRooms(vector<Interval>& intervals)
 }
 
 /********************/
+/* 206. Reverse Linked List*/
+ListNode* reverseList(ListNode* head)
+{
+    ListNode *prev = NULL;
+    ListNode *next = NULL;
+
+    while(head)
+    {
+        next = head->next;
+        head->next = prev;
+        prev = head;
+        head = next; 
+    }
+
+    return prev; 
+}
+
+/********************/
+/* 121. Best Time to Buy and Sell Stock*/
+int maxProfit(vector<int>& prices)
+{
+    if(prices.size() == 0)
+        return 0;
+    int min = prices[0];
+    int maxProfit = 0;
+    for(int i = 1; i < prices.size(); i++)
+    {
+        if(prices[i] < min)
+            min = prices[i];
+        
+        if(prices[i] - min > maxProfit)
+            maxProfit = prices[i] - min;
+    }
+    return maxProfit;
+}
+
+/********************/
 int main(int argc, char **argv)
 {
     vector<int> arr = {2, 7, 11, 15};
