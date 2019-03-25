@@ -362,12 +362,6 @@ vector<Interval> merge(vector<Interval>& intervals)
 
 /********************/
 /* 21. Merge Two Sorted Lists */
-struct ListNode {
-    int val;
-    ListNode *next;
-    ListNode(int x) : val(x), next(NULL) {}
-};
-
 ListNode* mergeTwoLists(ListNode* l1, ListNode* l2)
 {
     ListNode *head = new ListNode(0);
@@ -478,16 +472,70 @@ int maxProfit(vector<int>& prices)
 }
 
 /********************/
+/* 7. Reverse Integer */
+int reverse(int x)
+{
+    long long target = 0;
+    while(x)
+    {
+        target = (x % 10) + target * 10;
+        x /= 10;
+    }
+
+    return (target > INT32_MAX || target < INT32_MIN)? 0 : target; 
+}
+/********************/
+/* 238. Product of Array Except Self*/
+vector<int> productExceptSelf(vector<int>& nums) 
+{
+    int n = nums.size();
+    int front[n], back[n];
+    front[0] = nums[0];
+    back[0] = nums[n - 1];
+
+    for(int i = 1; i < n; i++)
+    {
+        front[i] = front[i - 1] * nums[i];
+        back[i] = back[i - 1] * nums[n - i - 1];
+    }
+
+    vector<int> result;
+    for(int i = 0; i < n; i++)
+    {
+        int allFront = i - 1 >= 0 ? front[i - 1] : 1;
+        int allBack = i + 1 < n? back[n - 2 - i] : 1;
+        result.push_back(allFront * allBack);
+    }
+
+    return result;
+}
+
+/********************/
+/* 973. K Closest Points to Origin*/
+vector<vector<int>> kClosest(vector<vector<int>>& points, int K)
+{
+    std::sort(points.begin(), points.end(), [&](vector<int>& a, vector<int>& b)
+    {
+        return (pow(a[0],2) + pow(a[1],2)) < (pow(b[0],2) + pow(b[1],2)); 
+    });
+
+    return vector<vector<int>>(points.begin(), points.begin() + K);
+}
+
+/********************/
+
 int main(int argc, char **argv)
 {
-    vector<int> arr = {2, 7, 11, 15};
+    /*vector<int> arr = {2, 7, 11, 15};
     int target = 9;
     vector<int> result;
     result = twoSum(arr, target);
     for(int i : result)
     {
         cout << " " << i << endl;
-    }
+    }*/
+    int a = -321;
+    cout << "==>" << reverse(a);
 
     return 0;
 }
