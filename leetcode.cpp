@@ -523,6 +523,202 @@ vector<vector<int>> kClosest(vector<vector<int>>& points, int K)
 }
 
 /********************/
+/* 11. Container With Most Water*/
+int maxArea(vector<int>& height)
+{
+    int s = 0, e = height.size() - 1;
+    int max = 0;
+
+    while(s < e)
+    {
+        int len = e - s; 
+        int min = 0;
+        if(height[s] < height[e])
+        {
+            min = height[s];
+            s++;
+        }
+        else
+        {
+            min = height[e];
+            e--;
+        }
+
+        int temp_area = len * min;
+        if(temp_area > max)
+            max = temp_area;
+    }
+
+    return max; 
+}
+
+/********************/
+/* 33. Search in Rotated Sorted Array */
+int search_rotate_index(vector<int>& arr, int low, int high)
+{
+    if(arr[low] < arr[high])
+        return 0;
+
+    while(low <= high)
+    {
+        int mid = (low + high) / 2;
+        if(arr[mid] > arr[mid + 1])
+        {
+            return mid + 1;
+        }
+        else
+        {
+            if(arr[mid] >= arr[low])
+                low = mid + 1;
+            else
+            {
+                high = mid - 1;
+            }
+        }
+    }
+}
+
+int binary_search(vector<int>& arr, int low, int high, int target)
+{
+    while(low <= high)
+    {
+        int mid = (low + high) / 2;
+        if(arr[mid] == target)
+            return mid;
+        else
+        {
+            if(arr[mid] < target)
+            {
+                low = mid + 1;
+            }
+            else
+            {
+                high = mid - 1;
+            }
+        }
+    }
+
+    return -1;    
+}
+
+int search(vector<int>& arr, int target)
+{
+    int n = arr.size();
+    if(n == 0)
+        return -1;
+    if (n == 1)
+        return arr[0] == target ? 0 : -1;
+    int rotate_index = search_rotate_index(arr, 0, n - 1);
+    if(arr[rotate_index] == target)
+        return rotate_index;
+    if(rotate_index == 0)
+        return binary_search(arr, 0, n - 1, target);
+
+    if(target < arr[0])
+        return binary_search(arr, rotate_index, n - 1, target);
+    else
+        return binary_search(arr, 0, rotate_index - 1, target);
+}
+
+/********************/
+/* 102. Binary Tree Level Order Traversal*/
+struct TreeNode {
+    int val;
+    TreeNode *left;
+    TreeNode *right;
+    TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+};
+
+vector<vector<int>> levelOrder(TreeNode* root) 
+{
+    vector<vector<int>> result;
+    if(NULL == root)
+        return result;
+    queue<TreeNode*> myqueue;
+    myqueue.push(root);
+
+    while(!myqueue.empty())
+    {
+        vector<int> level_vec;
+        int len = myqueue.size();
+        for(int i = 0; i < len; i++) 
+        {
+            TreeNode* front = myqueue.front();
+            level_vec.push_back(front->val);
+            myqueue.pop();
+
+            if(NULL != front->left)
+                myqueue.push(front->left);
+            if(NULL != front->right)
+                myqueue.push(front->right);
+        }
+
+        result.push_back(level_vec);
+    }
+
+    return result;
+}
+
+void levelOrderHelper(vector<vector<int>>& result, vector<TreeNode>& nodes)
+{
+    if(nodes.size() == 0)
+        return;
+
+    vector<int> levelNodes;
+    vector<TreeNode> nexLevelNodes;
+
+    for(TreeNode node : nodes)
+    {
+        levelNodes.push_back(node.val);        
+        if(node.left != NULL)
+            nexLevelNodes.push_back(*node.left);
+        if(node.right != NULL)
+            nexLevelNodes.push_back(*node.right);
+    }
+    result.push_back(levelNodes);
+
+    levelOrderHelper(result, nexLevelNodes);
+}
+
+vector<vector<int>> levelOrderRecursion(TreeNode* root) 
+{
+    vector<vector<int>> result;
+    if(NULL == root)
+        return result;
+
+    vector<TreeNode> init;
+    init.push_back(*root);
+
+    levelOrderHelper(result, init);
+
+    return result;
+}
+/********************/
+/* 22. Generate Parentheses */
+void back_track(vector<string>& result, string& strTemp, int open, int close, int max)
+{
+    if(strTemp.length() == 2 * max)
+    {
+        result.push_back(strTemp);
+        return;
+    }
+
+    if(open < max)
+        back_track(result, strTemp.append("("), open + 1, close, max);
+    if(close < open)
+        back_track(result, strTemp.append(")"), open, close + 1, max);
+}
+
+vector<string> generateParenthesis(int n)
+{
+    vector<string> result;
+    string strTemp;
+    back_track(result, strTemp, 0, 0, n);
+
+    return result;
+}
+
+/********************/
 
 int main(int argc, char **argv)
 {
