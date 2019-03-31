@@ -6,6 +6,9 @@
 #include <algorithm>
 #include <set>
 #include <stack>
+#include <unordered_set>
+#include <climits>
+#include <unordered_map>
 
 using std::cout;
 using std::cin;
@@ -18,6 +21,8 @@ using std::string;
 using std::max;
 using std::set;
 using std::stack;
+using std::unordered_set;
+using std::unordered_map;
 
 /**
  * leetcode most frequency problems
@@ -700,6 +705,7 @@ void back_track(vector<string>& result, string& strTemp, int open, int close, in
     if(strTemp.length() == 2 * max)
     {
         result.push_back(strTemp);
+        strTemp.clear();
         return;
     }
 
@@ -716,6 +722,256 @@ vector<string> generateParenthesis(int n)
     back_track(result, strTemp, 0, 0, n);
 
     return result;
+}
+
+/********************/
+/* 771. Jewels and Stones*/
+int numJewelsInStones(string J, string S)
+{
+    int count = 0;
+    unordered_set<char> myset;
+    for(char c : J)
+        myset.insert(c);
+    for(char c : S)
+    {
+        if(myset.find(c) != myset.end())
+        {
+            count++;
+        }
+    }
+
+    return count;
+}
+
+/********************/
+/* 141. Linked List Cycle*/
+struct ListNode {
+    int val;
+    ListNode *next;
+    ListNode(int x) : val(x), next(NULL) {}
+};
+
+bool hasCycle(ListNode *head)
+{
+    if(head == NULL || head->next == NULL)
+        return false;
+
+    ListNode *slow = head, *fast = head->next;
+    while(slow != NULL && fast != NULL)
+    {
+        if(slow == fast)
+            return true;
+        slow = slow->next;
+        fast = fast->next;
+        if(fast != NULL)
+            fast = fast->next;
+    }
+
+    return false; 
+}
+
+/********************/
+/* 9. Palindrome Number */
+bool isPalindrome(int x)
+{
+    if(x < 0)
+        return false;
+
+    long long temp = 0;
+    int tempx = x; 
+    while(x != 0)
+    {
+        temp = x % 10 + temp * 10;
+        x /= 10;
+    }
+    if(temp > INT_MAX)
+        temp = 0;
+    return tempx == temp;
+}
+
+/********************/
+/* 322. Coin Change*/
+int coinChange(vector<int>& coins, int amount)
+{
+    int dp[amount + 1];
+    for(int i = 0; i <= amount; i++)
+        dp[i] = amount + 1;
+    
+    dp[0] = 0;
+    for(int i = 1; i <= amount; i++) 
+    {
+        for(int j = 0; j < coins.size(); j++)
+        {
+            if(i >= coins[j])
+                dp[i] = std::min(dp[i], dp[i - coins[j]] + 1);
+        }
+    }
+
+    return dp[amount] > amount ? -1 : dp[amount];
+}
+
+/********************/
+/* 560. Subarray Sum Equals K */
+int subarraySum(vector<int>& nums, int k)
+{
+    int count = 0;
+    int n = nums.size();
+    int sum[n + 1];
+    sum[0] = 0;
+    for(int i = 1; i <= nums.size(); i++)
+        sum[i] = sum[i - 1] + nums[i - 1];
+    
+    for(int i = 0; i <= n; i++)
+    {
+        for(int j = i + 1; j <= n; j++)
+        {
+            if(sum[j] - sum[i] == k)
+                count++;
+        }
+    }
+
+    return count;
+}
+
+int subarraySumHash(vector<int>& nums, int k)
+{
+    unordered_map<int, int> sum_map;    
+    int sum = 0;
+    int count = 0;
+    sum_map[0] = 1;
+
+    for(int i = 1; i <= nums.size(); i++)
+    {
+        sum += nums[i - 1];
+        count += sum_map[sum - k];
+        ++sum_map[sum];
+    }
+
+    return count;
+}
+/********************/
+/* 560. Subarray Sum Equals K */
+vector<int> spiralOrder(vector<vector<int>>& matrix) 
+{
+    vector<int> res;
+    if(matrix.size() == 0)
+        return res;
+
+    int r1 = 0, r2 = matrix.size() - 1;
+    int c1 = 0, c2 = matrix[0].size() - 1;
+
+    while(r1 < r2 && c1 < c2)
+    {
+        for(int i = c1; i < c2; i++)
+            res.push_back(matrix[r1][i]);
+        for(int i = r1; i < r2; i++)
+            res.push_back(matrix[i][c2]);
+        for(int i = c2; i > c1; i--)
+            res.push_back(matrix[r2][i]);
+        for(int i = r2; i > r1; i--)
+            res.push_back(matrix[i][c1]);
+        
+        c1++;
+        c2--;
+        r1++;
+        r2--;
+    }
+
+    return res;
+}
+
+/********************/
+/* 412. Fizz Buzz */
+vector<string> fizzBuzz(int n) 
+{
+    vector<string> res;
+    bool mul3 = false, mul5 = false;
+
+    for(int i = 1; i <= n; i++)
+    {
+        
+        mul3 = false;mul5 = false;
+        if(i % 3 == 0)
+            mul3 = true;
+        if(i % 5 == 0)
+            mul5 = true;
+
+        if(mul3 && mul5)
+            res.push_back("FizzBuzz");
+        else if(mul3)
+            res.push_back("Fizz");
+        else if(mul5)
+            res.push_back("Buzz");
+        else
+            res.push_back(std::to_string(i));
+    }
+
+    return res;
+}
+
+/********************/
+/* 46. Permutations */
+
+void permute_recurse(vector<int>& nums, int begin, vector<vector<int> >& result)
+{
+    if(begin >= nums.size())
+    {
+        result.push_back(nums);
+        return;
+    }
+
+    for(int i = begin; i < nums.size(); i++)
+    {
+        std::swap(nums[begin], nums[i]);
+        permute_recurse(nums, begin + 1, result);
+        //reset
+        std::swap(nums[begin], nums[i]);
+    }
+}
+
+vector<vector<int>> permute(vector<int>& nums)
+{
+    vector<vector<int> > result;
+    permute_recurse(nums, 0, result);
+    return result;
+}
+
+/********************/
+/* 88. Merge Sorted Array */
+void merge(vector<int>& nums1, int m, vector<int>& nums2, int n)
+{
+    vector<int> temp;
+    for(int i = 0; i < m; i++)
+        temp.push_back(nums1[i]);
+    int i = 0, j = 0, k = 0;
+    while(i < temp.size() && j < nums2.size())
+    {
+        if(temp[i] <= nums2[j])
+        {
+            nums1[k] = temp[i];
+            i++;
+        }
+        else if(temp[i] > nums2[j])
+        {
+            nums1[k] = nums2[j];
+            j++;
+        }
+
+        k++;
+    }
+
+    if(i < temp.size()) 
+    {
+        nums1[k] = temp[i];
+        i++;
+        k++;
+    }
+    if(j < nums2.size()) 
+    {
+        nums1[k] = nums2[i];
+        i++;
+        k++;
+    }
 }
 
 /********************/
