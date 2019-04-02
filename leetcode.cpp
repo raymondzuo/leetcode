@@ -969,9 +969,52 @@ void merge(vector<int>& nums1, int m, vector<int>& nums2, int n)
     if(j < nums2.size()) 
     {
         nums1[k] = nums2[i];
-        i++;
+        j++;
         k++;
     }
+}
+
+/********************/
+/* 160. Intersection of Two Linked Lists*/
+ListNode *getIntersectionNode(ListNode *headA, ListNode *headB) 
+{
+    ListNode * pa = headA;         
+    ListNode * pb = headB;         
+
+    if(pa == NULL || pb == NULL)
+        return NULL;
+
+    while(pa != NULL && pb != NULL && pa != pb)
+    {
+        pa = pa->next;
+        pb = pb->next;
+
+        if(pa == pb)
+            return pa;
+        
+        if(pa == NULL)
+            pa = headB;
+        if(pb == NULL)
+            pb = headA;
+    }
+
+    return pa;
+}
+/********************/
+/* 234. Palindrome Linked List*/
+ListNode *temp;
+bool isPalindrome(ListNode* head) 
+{
+    temp = head;
+    return check(head);
+}
+
+bool check(ListNode *node)
+{
+    if(node == NULL) return true;
+    bool isPal = check(node->next) && (temp->val == node->val); 
+    temp = temp->next;
+    return isPal; 
 }
 
 /********************/
