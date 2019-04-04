@@ -23,6 +23,7 @@ using std::set;
 using std::stack;
 using std::unordered_set;
 using std::unordered_map;
+using std::priority_queue;
 
 /**
  * leetcode most frequency problems
@@ -1018,19 +1019,105 @@ bool check(ListNode *node)
 }
 
 /********************/
+/* 23. Merge k Sorted Lists*/
+ListNode * merge2Lists(ListNode *l1, ListNode *l2)
+{
+    if(l1 == NULL)
+        return l2;
+    if(l2 == NULL)
+        return l1;
+    
+    if(l1->val <= l2->val)
+    {
+        l1->next = merge2Lists(l1->next, l2);
+        return l1;
+    }
+    else
+    {
+        l2->next = merge2Lists(l1, l2->next);
+        return l2;
+    }
+}
+
+ListNode* mergeKLists(vector<ListNode*>& lists) 
+{
+    if(lists.empty())
+        return NULL;
+    //straight solution
+    while(lists.size() >  1)
+    {
+        lists.push_back(merge2Lists(lists[0], lists[1]));
+        lists.erase(lists.begin());
+        lists.erase(lists.begin());
+    }
+
+    return lists.front();    
+}
+
+struct compare
+{
+    bool operator()(ListNode* n1, ListNode* n2)
+    {
+        return n1->val > n2->val;
+    }
+};
+
+ListNode* mergeKListsPQ(vector<ListNode*>& lists) 
+{
+    priority_queue<ListNode*, vector<ListNode*>, compare> q;    
+    for(auto l : lists)
+    {
+        if(l)
+            q.push(l);
+    }
+
+    if(q.empty())
+        return NULL;
+    
+    ListNode *result = q.top();
+    ListNode *tail = result;
+    q.pop();
+    if(result->next)
+        q.push(result->next);
+    while(!q.empty())
+    {
+        tail->next = q.top();
+        q.pop();
+        tail = tail->next;
+        if(tail->next)
+            q.push(tail->next);
+    }
+
+    return result;
+}
+
+/********************/
+/* 344. Reverse String*/
+void reverseString(vector<char>& s)
+{
+    int i = 0, j = s.size() - 1;
+    while(i < j)
+    {
+        s[i] = s[i] + s[j];
+        s[j] = s[i] - s[j];
+        s[j] = s[i] - s[j]; 
+    }
+}
+
+/********************/
 
 int main(int argc, char **argv)
 {
-    /*vector<int> arr = {2, 7, 11, 15};
-    int target = 9;
-    vector<int> result;
-    result = twoSum(arr, target);
-    for(int i : result)
-    {
-        cout << " " << i << endl;
-    }*/
-    int a = -321;
-    cout << "==>" << reverse(a);
+/*vector<int> arr = {2, 7, 11, 15};
+int target = 9;
+vector<int> result;
+result = twoSum(arr, target);
+for(int i : result)
+{
+    cout << " " << i << endl;
+}*/
+int a = -321;
+cout << "==>" << reverse(a);
 
-    return 0;
+return 0;
 }
