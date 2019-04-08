@@ -1101,7 +1101,232 @@ void reverseString(vector<char>& s)
         s[i] = s[i] + s[j];
         s[j] = s[i] - s[j];
         s[j] = s[i] - s[j]; 
+
+        i++;
+        j--;
     }
+}
+
+/********************/
+/* 79. Word Search*/
+bool dfs_find(vector<vector<char> >& board, const string& word, int index, int i, int j)
+{
+    if(i < 0 || i >= board.size() || j < 0 || j >= board[0].size() || index >= word.size() 
+    || board[i][j] == '\0')
+        return false;
+    
+    if(word[index] != board[i][j])
+        return false;
+    if(index == word.size() - 1)
+        return true;
+
+    char temp = board[i][j];
+    board[i][j] = '\0';
+
+    if(dfs_find(board, word, index + 1, i + 1, j)
+    || dfs_find(board, word, index + 1, i - 1, j)
+    || dfs_find(board, word, index + 1, i, j + 1)
+    || dfs_find(board, word, index + 1, i, j - 1))
+        return true;
+
+    board[i][j] = temp;
+    return false;
+}
+
+bool exist(vector<vector<char>>& board, string word)
+{
+    if(word.empty())
+        return true;
+    if(board.size() == 0)
+        return false;
+    
+    int r = board.size();
+    int c = board[0].size();
+
+    for(int i = 0; i < r; i++)
+    {
+        for(int j = 0; j < c; j++)
+        {
+            bool res = dfs_find(board, word, 0, i, j);
+            if(res)
+                return res;
+        }
+    }
+
+    return false;
+}
+
+/********************/
+/* 203. Remove Linked List Elements*/
+ListNode* removeElements(ListNode* head, int val) 
+{
+    ListNode ** ppl = &head;    
+
+    while(*ppl != NULL)
+    {
+        if((*ppl)->val == val)
+        {
+            *ppl = (*ppl)->next;
+        }
+        else
+        {
+            ppl = &(*ppl)->next;
+        }
+    }
+
+    return head;
+}
+/********************/
+/* 103. Binary Tree Zigzag Level Order Traversal*/
+vector<vector<int>> zigzagLevelOrder(TreeNode* root)
+{
+    vector<vector<int> > result;
+    if(NULL == root)
+        return result;
+
+    stack<TreeNode*> st1;
+    stack<TreeNode*> st2;
+    int lvl = 0;
+
+    st1.push(root);
+    while(1)    
+    {
+        if(st1.empty() && st2.empty())
+            break;
+        
+        vector<int> tempVec;
+
+        while(!st1.empty())
+        {
+            TreeNode *pNode = st1.top();
+            tempVec.push_back(pNode->val);
+            if(pNode->left)
+                st2.push(pNode->left);
+            if(pNode->right)
+                st2.push(pNode->right);
+            st1.pop();
+        }
+
+        if(tempVec.size() > 0)
+        {
+            result.push_back(tempVec);
+            tempVec.clear();
+        }
+
+        while(!st2.empty())
+        {
+            TreeNode *pNode = st2.top();
+            tempVec.push_back(pNode->val);
+            if(pNode->left)
+                st1.push(pNode->left);
+            if(pNode->right)
+                st1.push(pNode->right);
+            st2.pop();
+        }
+
+        if(tempVec.size() > 0)
+            result.push_back(tempVec);
+    }
+
+    return result;
+}
+/********************/
+/* 215. Kth Largest Element in an Array*/
+int findKthLargest(vector<int>& nums, int k)
+{
+    if(0 == nums.size())
+        return 0;
+
+    priority_queue<int, vector<int>, std::greater<int>> pq;
+    for(int i = 0; i < nums.size(); i++)
+    {
+        pq.push(nums[i]);
+        if(pq.size() > k)
+            pq.pop();
+    }
+
+    return pq.top();
+}
+/********************/
+/* 138. Copy List with Random Pointer*/
+class Node {
+public:
+    int val;
+    Node* next;
+    Node* random;
+
+    Node() {}
+
+    Node(int _val, Node* _next, Node* _random) {
+        val = _val;
+        next = _next;
+        random = _random;
+    }
+};
+
+map<Node*, Node*> clone_node_map;
+Node *get_clone_node(Node *oldNode)
+{
+    if(NULL == oldNode)
+        return NULL;
+    if(clone_node_map.find(oldNode) != clone_node_map.end())
+    {
+        return clone_node_map[oldNode];
+    }
+    else
+    {
+        clone_node_map[oldNode] = new Node(oldNode->val, NULL, NULL);
+        return clone_node_map[oldNode];
+    }
+}
+
+Node* copyRandomList(Node* head) 
+{
+    if(NULL == head)
+        return head;
+
+    Node *pNewHead = new Node(head->val, NULL, NULL);
+    clone_node_map[head] = pNewHead;
+    Node *pOldHead = head;
+
+    while(pOldHead)
+    {
+        pNewHead->next = get_clone_node(pOldHead->next);
+        pNewHead->random = get_clone_node(pOldHead->random);
+
+        pOldHead = pOldHead->next;
+        pNewHead = pNewHead->next;
+    }
+
+    return clone_node_map[head];
+}
+/********************/
+/* 98. Validate Binary Search Tree*/
+void get_inorder(TreeNode *root, vector<TreeNode*>& vecInorder)
+{
+    if(root == NULL)
+        return;
+
+    get_inorder(root->left, vecInorder);
+    vecInorder.push_back(root);
+    get_inorder(root->right, vecInorder);
+}
+
+bool isValidBST(TreeNode* root)
+{
+    if(NULL == root)
+        return true;
+
+    vector<TreeNode*> vecInorder;
+    get_inorder(root, vecInorder);
+
+    for(int i = 0; i < vecInorder.size() - 1; i++)
+    {
+        if(vecInorder[i]->val >= vecInorder[i + 1]->val)
+            return false;
+    }
+
+    return true;
 }
 
 /********************/
