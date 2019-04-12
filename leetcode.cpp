@@ -1328,6 +1328,242 @@ bool isValidBST(TreeNode* root)
 
     return true;
 }
+/********************/
+/* 226. Invert Binary Tree*/
+TreeNode* invertTree(TreeNode* root)
+{
+    if(root == NULL)
+        return NULL;
+    TreeNode *pTemp = root->left;
+    root->left = invertTree(root->right);
+    root->right = invertTree(pTemp);
+
+    return root;
+}
+
+/********************/
+/* 543. Diameter of Binary Tree*/
+int calTreeNodeLen(TreeNode *root, int& max)
+{
+    if(NULL == root)
+        return 0;
+
+    int left_len = calTreeNodeLen(root->left, max);    
+    int right_len = calTreeNodeLen(root->right, max);    
+
+    max = std::max(max, left_len + right_len + 1);
+    return std::max(left_len, right_len) + 1;
+}
+
+int diameterOfBinaryTree(TreeNode* root)
+{
+    if(NULL == root)
+        return 0;
+    
+    int max = 1;
+    calTreeNodeLen(root, max);
+
+    return max - 1;
+}
+/********************/
+/* 199. Binary Tree Right Side View*/
+vector<int> rightSideView(TreeNode* root) 
+{
+    vector<int> res;
+    if(NULL == root)
+        return res;
+
+    queue<TreeNode*> node_queue;
+    node_queue.push(root);
+
+    while(!node_queue.empty())
+    {
+        int len = node_queue.size();
+        for(int i = 0; i < len; i++)
+        {
+            TreeNode *pTemp = node_queue.front();
+            if(pTemp->left)
+                node_queue.push(pTemp->left);
+            if(pTemp->right)
+                node_queue.push(pTemp->right);
+            if(i == len - 1)
+                res.push_back(pTemp->val);
+
+            node_queue.pop();
+        }
+    }
+
+    return res;
+}
+/********************/
+/* 94. Binary Tree Inorder Traversal*/
+vector<int> inorderTraversal(TreeNode* root)
+{
+    vector<int> res;
+    stack<TreeNode*> st;
+    TreeNode *pTempRoot = root;
+
+    while(pTempRoot || !st.empty())
+    {
+        while(pTempRoot)
+        {
+            st.push(pTempRoot);
+            pTempRoot = pTempRoot->left;
+        }
+
+        pTempRoot = st.top();
+        res.push_back(pTempRoot->val);
+        st.pop();
+
+        pTempRoot = pTempRoot->right;
+    }
+
+    return res;
+}
+
+/********************/
+/* 124. Binary Tree Maximum Path Sum*/
+int getMaxSum(TreeNode *root, int& max)
+{
+    if(root == NULL)
+        return 0;
+    
+    int left_max = getMaxSum(root->left, max);
+    left_max = left_max > 0 ? left_max : 0;
+    int right_max = getMaxSum(root->right, max);
+    right_max = right_max > 0 ? right_max : 0;
+
+    int temp = root->val + left_max + right_max;
+    if(temp > max)
+        max = temp;
+
+    return root->val + std::max(left_max, right_max);
+}
+
+int maxPathSum(TreeNode* root)
+{
+    int max = INT_MIN;
+    getMaxSum(root, max);
+    return max;
+}
+/********************/
+/* 236. Lowest Common Ancestor of a Binary Tree*/
+bool find_path(TreeNode* root, TreeNode* pTargetNode, vector<TreeNode*>& vecPath)
+{
+    if(NULL == root)
+        return false;
+
+    vecPath.push_back(root);
+    if(root == pTargetNode)
+        return true;
+    else
+    {
+        bool bFindLeft = find_path(root->left, pTargetNode, vecPath);
+        if(!bFindLeft)
+        {
+            bool bFindRight = find_path(root->right, pTargetNode, vecPath);
+            if(!bFindRight)
+            {
+                vecPath.pop_back();
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
+
+TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q) 
+{
+    if(NULL == root)
+        return NULL;
+    vector<TreeNode*> vec_p, vec_q;
+    bool bLeft = find_path(root, p, vec_p);
+    bool bRight = find_path(root, q, vec_q);
+    if(bLeft && bRight)
+    {
+        int i = 0, j = 0;
+        TreeNode *lca = root;
+        while(i < vec_p.size() && j < vec_q.size())
+        {
+            if(vec_p[i] == vec_q[j])
+            {
+                lca = vec_p[i];
+                i++;
+                j++;
+            }
+            else
+                break;
+        }
+
+        return lca;
+    }
+
+    return NULL;
+}
+/********************/
+/* 295. Find Median from Data Stream*/
+class MedianFinder 
+{
+public:
+    /** initialize your data structure here. */
+    MedianFinder() 
+    {
+        
+    }
+    
+    void addNum(int num) 
+    {
+        data.insert(std::lower_bound(data.begin(), data.end(), num), num);    
+    }
+    
+    double findMedian() 
+    {
+        int n = data.size();
+        if(n & 1)    
+            return data[n / 2];
+        else
+        {
+            return ((double)data[n / 2] + (double)data[n / 2 - 1]) / 2.0;
+        }
+    }
+
+private:
+    vector<int> data;
+};
+class MedianFinder2Heaps //with two heap 
+{ 
+    public: 
+    /** initialize your data structure here. */ 
+    MedianFinder2Heaps() 
+    {
+    }
+    
+    void addNum(int num) 
+    {
+        low.push(num);
+
+        high.push(low.top());
+        low.pop();
+
+        if(low.size() < high.size())
+        {
+            low.push(high.top());
+            high.pop();
+        }
+    }
+    
+    double findMedian() 
+    {
+        return low.size() > high.size()? low.top() : (low.top() + high.top()) * 0.5;
+    }
+
+private:
+    priority_queue<int> low;
+    priority_queue<int, vector<int>, std::greater<int>> high;
+};
+/********************/
+/* */
 
 /********************/
 
