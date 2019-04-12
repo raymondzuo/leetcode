@@ -10,20 +10,20 @@
 #include <climits>
 #include <unordered_map>
 
-using std::cout;
 using std::cin;
+using std::cout;
 using std::endl;
-using std::vector;
 using std::map;
-using std::queue;
-using std::pair;
-using std::string;
 using std::max;
+using std::pair;
+using std::priority_queue;
+using std::queue;
 using std::set;
 using std::stack;
-using std::unordered_set;
+using std::string;
 using std::unordered_map;
-using std::priority_queue;
+using std::unordered_set;
+using std::vector;
 
 /**
  * leetcode most frequency problems
@@ -31,16 +31,16 @@ using std::priority_queue;
  */
 
 //#1 Two sum
-vector<int> twoSum(vector<int>& nums, int target)
+vector<int> twoSum(vector<int> &nums, int target)
 {
     vector<int> result;
     std::map<int, int> mymap;
 
-    for(int i = 0; i < nums.size(); i++)    
+    for (int i = 0; i < nums.size(); i++)
     {
         int another = target - nums[i];
         auto it = mymap.find(another);
-        if(it != mymap.end())
+        if (it != mymap.end())
         {
             result.push_back(it->second);
             result.push_back(i);
@@ -51,20 +51,21 @@ vector<int> twoSum(vector<int>& nums, int target)
     }
 }
 
-struct ListNode {
+struct ListNode
+{
     int val;
     ListNode *next;
     ListNode(int x) : val(x), next(NULL) {}
 };
-//#2 Add two numbers 
-ListNode* addTwoNumbers(ListNode* l1, ListNode* l2)
+//#2 Add two numbers
+ListNode *addTwoNumbers(ListNode *l1, ListNode *l2)
 {
     ListNode *head = new ListNode(0);
     ListNode *cur = head;
     int carry = 0;
     ListNode *p1 = l1, *p2 = l2;
 
-    while(p1 || p2)
+    while (p1 || p2)
     {
         int x = p1 ? p1->val : 0;
         int y = p2 ? p2->val : 0;
@@ -72,18 +73,18 @@ ListNode* addTwoNumbers(ListNode* l1, ListNode* l2)
         int sum = x + y + carry;
         carry = sum / 10;
         sum = sum % 10;
-        ListNode *temp = new ListNode(sum); 
+        ListNode *temp = new ListNode(sum);
 
         cur->next = temp;
         cur = temp;
 
-        if(p1)
+        if (p1)
             p1 = p1->next;
-        if(p2)
+        if (p2)
             p2 = p2->next;
     }
 
-    if(carry > 0)
+    if (carry > 0)
         cur->next = new ListNode(carry);
 
     return head->next;
@@ -91,12 +92,12 @@ ListNode* addTwoNumbers(ListNode* l1, ListNode* l2)
 
 /********************/
 //#200. Number of Islands
-void dfs(vector<vector<char>>& grid, int r, int c)
+void dfs(vector<vector<char>> &grid, int r, int c)
 {
     int maxr = grid.size();
     int maxc = grid[0].size();
 
-    if(r < 0 || c < 0 || r >= grid.size() || c >= grid[0].size() || grid[r][c] == '0')
+    if (r < 0 || c < 0 || r >= grid.size() || c >= grid[0].size() || grid[r][c] == '0')
         return;
     grid[r][c] = '0';
     dfs(grid, r + 1, c);
@@ -105,22 +106,22 @@ void dfs(vector<vector<char>>& grid, int r, int c)
     dfs(grid, r, c - 1);
 }
 
-int numIslands(vector<vector<char>>& grid) 
+int numIslands(vector<vector<char>> &grid)
 {
     int count = 0;
 
     int maxr = grid.size();
-    if(0 == maxr)
+    if (0 == maxr)
         return count;
     int maxc = grid[0].size();
-    if(0 == maxc)
+    if (0 == maxc)
         return count;
 
-    for(int i = 0; i < maxr; i++)
+    for (int i = 0; i < maxr; i++)
     {
-        for(int j = 0; j < maxc; j++)
+        for (int j = 0; j < maxc; j++)
         {
-            if('1' == grid[i][j]) 
+            if ('1' == grid[i][j])
             {
                 count++;
                 dfs(grid, i, j);
@@ -131,48 +132,48 @@ int numIslands(vector<vector<char>>& grid)
     return count;
 }
 
-int numIslandsBFS(vector<vector<char>>& grid) 
+int numIslandsBFS(vector<vector<char>> &grid)
 {
     int nr = grid.size();
-    if(0 == nr)
+    if (0 == nr)
         return 0;
     int nc = grid[0].size();
 
     int count = 0;
-    for(int r = 0; r < nr; r++)
+    for (int r = 0; r < nr; r++)
     {
-        for(int c = 0; c < nc; c++)
+        for (int c = 0; c < nc; c++)
         {
-            if('1' == grid[r][c])
+            if ('1' == grid[r][c])
             {
                 count++;
                 grid[r][c] = '0';
-                queue<pair<int, int>> tempqueue;                
-                tempqueue.push({r,c});
+                queue<pair<int, int>> tempqueue;
+                tempqueue.push({r, c});
 
-                while(!tempqueue.empty())
+                while (!tempqueue.empty())
                 {
                     auto front = tempqueue.front();
                     tempqueue.pop();
                     int tempr = front.first;
                     int tempc = front.second;
-                    
-                    if(tempr - 1 >= 0 && grid[tempr - 1][tempc] == '1')
+
+                    if (tempr - 1 >= 0 && grid[tempr - 1][tempc] == '1')
                     {
                         tempqueue.push({tempr - 1, tempc});
                         grid[tempr - 1][tempc] = '0';
                     }
-                    if(tempr + 1 < nr && grid[tempr + 1][tempc] == '1')
+                    if (tempr + 1 < nr && grid[tempr + 1][tempc] == '1')
                     {
                         tempqueue.push({tempr + 1, tempc});
                         grid[tempr + 1][tempc] = '0';
                     }
-                    if(tempc - 1 >= 0 && grid[tempr][tempc - 1] == '1')
+                    if (tempc - 1 >= 0 && grid[tempr][tempc - 1] == '1')
                     {
                         tempqueue.push({tempr, tempc - 1});
                         grid[tempr][tempc - 1] = '0';
                     }
-                    if(tempc + 1 < nc && grid[tempr][tempc + 1] == '1')
+                    if (tempc + 1 < nc && grid[tempr][tempc + 1] == '1')
                     {
                         tempqueue.push({tempr, tempc + 1});
                         grid[tempr][tempc + 1] = '0';
@@ -191,25 +192,25 @@ int numIslandsBFS(vector<vector<char>>& grid)
 //#5. Longest Palindromic Substring
 string longestPalindrome(string s)
 {
-    int n = s.length(); 
+    int n = s.length();
     int max = 1;
-    int si = 0;//start
-    int dp[n][n];//n->n from n to n
+    int si = 0;   //start
+    int dp[n][n]; //n->n from n to n
     //length is 1
-    for(int i = 0; i < n; i++)
+    for (int i = 0; i < n; i++)
     {
-        for(int j = 0; j < n; j++)
+        for (int j = 0; j < n; j++)
         {
-            if(i == j)
+            if (i == j)
                 dp[i][j] = 1;
             else
                 dp[i][j] = 0;
         }
     }
     //length is 2
-    for(int i = 0; i < n - 1; i++)
+    for (int i = 0; i < n - 1; i++)
     {
-        if(s[i + 1] == s[i])
+        if (s[i + 1] == s[i])
         {
             dp[i][i + 1] = 1;
             max = 2;
@@ -218,15 +219,15 @@ string longestPalindrome(string s)
     }
 
     //length large than 3
-    for(int k = 3; k <= n; k++)
+    for (int k = 3; k <= n; k++)
     {
-        for(int i = 0; i < n - k + 1; i++)
+        for (int i = 0; i < n - k + 1; i++)
         {
             int j = i + k - 1;
-            if(dp[i + 1][j - 1] && s[i] == s[j])
+            if (dp[i + 1][j - 1] && s[i] == s[j])
             {
                 dp[i][j] = 1;
-                if(k > max)
+                if (k > max)
                 {
                     max = k;
                     si = i;
@@ -245,7 +246,7 @@ int lengthOfLongestSubstring(string s)
     int max = 0, start = 0;
     vector<char> dp(256, -1);
 
-    for(int i = 0; i < s.length(); i++)
+    for (int i = 0; i < s.length(); i++)
     {
         start = std::max(dp[s[i]] + 1, start);
         dp[s[i]] = i;
@@ -257,24 +258,24 @@ int lengthOfLongestSubstring(string s)
 
 /********************/
 /* 15. 3Sum */
-vector<vector<int> > threeSum(vector<int> &num)
+vector<vector<int>> threeSum(vector<int> &num)
 {
     std::sort(num.begin(), num.end());
     vector<vector<int>> result;
-    
-    for(int i = 0; i < num.size(); i++)
+
+    for (int i = 0; i < num.size(); i++)
     {
         int target = -num[i];
         int left = i + 1;
         int right = num.size() - 1;
-        while(left < right)
+        while (left < right)
         {
             int sum = num[left] + num[right];
-            if(sum > target)
+            if (sum > target)
             {
                 right--;
             }
-            else if(sum < target)
+            else if (sum < target)
             {
                 left++;
             }
@@ -286,18 +287,18 @@ vector<vector<int> > threeSum(vector<int> &num)
                 temp.push_back(num[right]);
                 result.push_back(temp);
 
-                while(left < right && num[left] == temp[1])
+                while (left < right && num[left] == temp[1])
                 {
                     left++;
                 }
-                while(left < right && num[right] == temp[2])
+                while (left < right && num[right] == temp[2])
                 {
                     right--;
                 }
             }
         }
 
-        while(i + 1 < num.size() && num[i+1] == num[i])
+        while (i + 1 < num.size() && num[i + 1] == num[i])
             i++;
     }
 
@@ -312,19 +313,19 @@ bool isValid(string s)
     match_map['{'] = '}';
     match_map['['] = ']';
 
-    stack<char> mystack; 
-    for(char c : s)
+    stack<char> mystack;
+    for (char c : s)
     {
-        if(match_map.find(c) != match_map.end())
+        if (match_map.find(c) != match_map.end())
         {
             mystack.push(c);
         }
         else
         {
-            if(mystack.empty())
+            if (mystack.empty())
                 return false;
             char matchChar = mystack.top();
-            if(c != match_map[matchChar])
+            if (c != match_map[matchChar])
                 return false;
 
             mystack.pop();
@@ -335,23 +336,23 @@ bool isValid(string s)
 }
 /********************/
 /* 56. Merge Intervals */
-struct Interval {
+struct Interval
+{
     int start;
     int end;
     Interval() : start(0), end(0) {}
     Interval(int s, int e) : start(s), end(e) {}
 };
 
-vector<Interval> merge(vector<Interval>& intervals) 
+vector<Interval> merge(vector<Interval> &intervals)
 {
-    std::sort(intervals.begin(), intervals.end(), [&](struct Interval a, struct Interval b)
-    {
+    std::sort(intervals.begin(), intervals.end(), [&](struct Interval a, struct Interval b) {
         return a.start < b.start;
     });
 
-    for(auto it = intervals.begin(); it != intervals.end(); )
+    for (auto it = intervals.begin(); it != intervals.end();)
     {
-        if((it + 1) != intervals.end() && (it + 1)->start <= it->end)
+        if ((it + 1) != intervals.end() && (it + 1)->start <= it->end)
         {
             int nextEnd = (it + 1)->end;
             it->end = nextEnd > it->end ? nextEnd : it->end;
@@ -368,16 +369,16 @@ vector<Interval> merge(vector<Interval>& intervals)
 
 /********************/
 /* 21. Merge Two Sorted Lists */
-ListNode* mergeTwoLists(ListNode* l1, ListNode* l2)
+ListNode *mergeTwoLists(ListNode *l1, ListNode *l2)
 {
     ListNode *head = new ListNode(0);
     ListNode *cur = head;
     ListNode *p1 = l1, *p2 = l2;
 
-    while(p1 && p2)
+    while (p1 && p2)
     {
         cur->next = p1->val > p2->val ? p2 : p1;
-        if(p1->val > p2->val)
+        if (p1->val > p2->val)
         {
             cur->next = p2;
             p2 = p2->next;
@@ -387,30 +388,30 @@ ListNode* mergeTwoLists(ListNode* l1, ListNode* l2)
             cur->next = p1;
             p1 = p1->next;
         }
-        
+
         cur = cur->next;
     }
 
     cur->next = p1 ? p1 : p2;
 
-    return head->next; 
+    return head->next;
 }
 
 /********************/
 /* 53. Maximum Subarray */
-int maxSubArray(vector<int>& nums)
+int maxSubArray(vector<int> &nums)
 {
     int n = nums.size();
     int dp[n];
-    for(int i = 0; i < n; i++)
+    for (int i = 0; i < n; i++)
         dp[i] = -INT64_MAX;
 
     dp[0] = nums[0];
     int max = nums[0];
-    for(int i = 1; i < n; i++) 
+    for (int i = 1; i < n; i++)
     {
         dp[i] = dp[i - 1] > 0 ? dp[i - 1] + nums[i] : nums[i];
-        if(dp[i] > max)
+        if (dp[i] > max)
             max = dp[i];
     }
 
@@ -419,10 +420,10 @@ int maxSubArray(vector<int>& nums)
 
 /********************/
 /* 253. Meeting Rooms II */
-int minMeetingRooms(vector<Interval>& intervals)
+int minMeetingRooms(vector<Interval> &intervals)
 {
     std::map<int, int> mymap;
-    for(auto& i : intervals)
+    for (auto &i : intervals)
     {
         mymap[i.start]++;
         mymap[i.end]--;
@@ -430,10 +431,10 @@ int minMeetingRooms(vector<Interval>& intervals)
 
     int max = 0;
     int temp = 0;
-    for(auto it = mymap.begin(); it != mymap.end(); it++)
+    for (auto it = mymap.begin(); it != mymap.end(); it++)
     {
-        temp += it->second; 
-        if(temp > max)
+        temp += it->second;
+        if (temp > max)
             max = temp;
     }
 
@@ -442,36 +443,36 @@ int minMeetingRooms(vector<Interval>& intervals)
 
 /********************/
 /* 206. Reverse Linked List*/
-ListNode* reverseList(ListNode* head)
+ListNode *reverseList(ListNode *head)
 {
     ListNode *prev = NULL;
     ListNode *next = NULL;
 
-    while(head)
+    while (head)
     {
         next = head->next;
         head->next = prev;
         prev = head;
-        head = next; 
+        head = next;
     }
 
-    return prev; 
+    return prev;
 }
 
 /********************/
 /* 121. Best Time to Buy and Sell Stock*/
-int maxProfit(vector<int>& prices)
+int maxProfit(vector<int> &prices)
 {
-    if(prices.size() == 0)
+    if (prices.size() == 0)
         return 0;
     int min = prices[0];
     int maxProfit = 0;
-    for(int i = 1; i < prices.size(); i++)
+    for (int i = 1; i < prices.size(); i++)
     {
-        if(prices[i] < min)
+        if (prices[i] < min)
             min = prices[i];
-        
-        if(prices[i] - min > maxProfit)
+
+        if (prices[i] - min > maxProfit)
             maxProfit = prices[i] - min;
     }
     return maxProfit;
@@ -482,34 +483,34 @@ int maxProfit(vector<int>& prices)
 int reverse(int x)
 {
     long long target = 0;
-    while(x)
+    while (x)
     {
         target = (x % 10) + target * 10;
         x /= 10;
     }
 
-    return (target > INT32_MAX || target < INT32_MIN)? 0 : target; 
+    return (target > INT32_MAX || target < INT32_MIN) ? 0 : target;
 }
 /********************/
 /* 238. Product of Array Except Self*/
-vector<int> productExceptSelf(vector<int>& nums) 
+vector<int> productExceptSelf(vector<int> &nums)
 {
     int n = nums.size();
     int front[n], back[n];
     front[0] = nums[0];
     back[0] = nums[n - 1];
 
-    for(int i = 1; i < n; i++)
+    for (int i = 1; i < n; i++)
     {
         front[i] = front[i - 1] * nums[i];
         back[i] = back[i - 1] * nums[n - i - 1];
     }
 
     vector<int> result;
-    for(int i = 0; i < n; i++)
+    for (int i = 0; i < n; i++)
     {
         int allFront = i - 1 >= 0 ? front[i - 1] : 1;
-        int allBack = i + 1 < n? back[n - 2 - i] : 1;
+        int allBack = i + 1 < n ? back[n - 2 - i] : 1;
         result.push_back(allFront * allBack);
     }
 
@@ -518,11 +519,10 @@ vector<int> productExceptSelf(vector<int>& nums)
 
 /********************/
 /* 973. K Closest Points to Origin*/
-vector<vector<int>> kClosest(vector<vector<int>>& points, int K)
+vector<vector<int>> kClosest(vector<vector<int>> &points, int K)
 {
-    std::sort(points.begin(), points.end(), [&](vector<int>& a, vector<int>& b)
-    {
-        return (pow(a[0],2) + pow(a[1],2)) < (pow(b[0],2) + pow(b[1],2)); 
+    std::sort(points.begin(), points.end(), [&](vector<int> &a, vector<int> &b) {
+        return (pow(a[0], 2) + pow(a[1], 2)) < (pow(b[0], 2) + pow(b[1], 2));
     });
 
     return vector<vector<int>>(points.begin(), points.begin() + K);
@@ -530,16 +530,16 @@ vector<vector<int>> kClosest(vector<vector<int>>& points, int K)
 
 /********************/
 /* 11. Container With Most Water*/
-int maxArea(vector<int>& height)
+int maxArea(vector<int> &height)
 {
     int s = 0, e = height.size() - 1;
     int max = 0;
 
-    while(s < e)
+    while (s < e)
     {
-        int len = e - s; 
+        int len = e - s;
         int min = 0;
-        if(height[s] < height[e])
+        if (height[s] < height[e])
         {
             min = height[s];
             s++;
@@ -551,30 +551,30 @@ int maxArea(vector<int>& height)
         }
 
         int temp_area = len * min;
-        if(temp_area > max)
+        if (temp_area > max)
             max = temp_area;
     }
 
-    return max; 
+    return max;
 }
 
 /********************/
 /* 33. Search in Rotated Sorted Array */
-int search_rotate_index(vector<int>& arr, int low, int high)
+int search_rotate_index(vector<int> &arr, int low, int high)
 {
-    if(arr[low] < arr[high])
+    if (arr[low] < arr[high])
         return 0;
 
-    while(low <= high)
+    while (low <= high)
     {
         int mid = (low + high) / 2;
-        if(arr[mid] > arr[mid + 1])
+        if (arr[mid] > arr[mid + 1])
         {
             return mid + 1;
         }
         else
         {
-            if(arr[mid] >= arr[low])
+            if (arr[mid] >= arr[low])
                 low = mid + 1;
             else
             {
@@ -584,16 +584,16 @@ int search_rotate_index(vector<int>& arr, int low, int high)
     }
 }
 
-int binary_search(vector<int>& arr, int low, int high, int target)
+int binary_search(vector<int> &arr, int low, int high, int target)
 {
-    while(low <= high)
+    while (low <= high)
     {
         int mid = (low + high) / 2;
-        if(arr[mid] == target)
+        if (arr[mid] == target)
             return mid;
         else
         {
-            if(arr[mid] < target)
+            if (arr[mid] < target)
             {
                 low = mid + 1;
             }
@@ -604,23 +604,23 @@ int binary_search(vector<int>& arr, int low, int high, int target)
         }
     }
 
-    return -1;    
+    return -1;
 }
 
-int search(vector<int>& arr, int target)
+int search(vector<int> &arr, int target)
 {
     int n = arr.size();
-    if(n == 0)
+    if (n == 0)
         return -1;
     if (n == 1)
         return arr[0] == target ? 0 : -1;
     int rotate_index = search_rotate_index(arr, 0, n - 1);
-    if(arr[rotate_index] == target)
+    if (arr[rotate_index] == target)
         return rotate_index;
-    if(rotate_index == 0)
+    if (rotate_index == 0)
         return binary_search(arr, 0, n - 1, target);
 
-    if(target < arr[0])
+    if (target < arr[0])
         return binary_search(arr, rotate_index, n - 1, target);
     else
         return binary_search(arr, 0, rotate_index - 1, target);
@@ -628,34 +628,35 @@ int search(vector<int>& arr, int target)
 
 /********************/
 /* 102. Binary Tree Level Order Traversal*/
-struct TreeNode {
+struct TreeNode
+{
     int val;
     TreeNode *left;
     TreeNode *right;
     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
 };
 
-vector<vector<int>> levelOrder(TreeNode* root) 
+vector<vector<int>> levelOrder(TreeNode *root)
 {
     vector<vector<int>> result;
-    if(NULL == root)
+    if (NULL == root)
         return result;
-    queue<TreeNode*> myqueue;
+    queue<TreeNode *> myqueue;
     myqueue.push(root);
 
-    while(!myqueue.empty())
+    while (!myqueue.empty())
     {
         vector<int> level_vec;
         int len = myqueue.size();
-        for(int i = 0; i < len; i++) 
+        for (int i = 0; i < len; i++)
         {
-            TreeNode* front = myqueue.front();
+            TreeNode *front = myqueue.front();
             level_vec.push_back(front->val);
             myqueue.pop();
 
-            if(NULL != front->left)
+            if (NULL != front->left)
                 myqueue.push(front->left);
-            if(NULL != front->right)
+            if (NULL != front->right)
                 myqueue.push(front->right);
         }
 
@@ -665,20 +666,20 @@ vector<vector<int>> levelOrder(TreeNode* root)
     return result;
 }
 
-void levelOrderHelper(vector<vector<int>>& result, vector<TreeNode>& nodes)
+void levelOrderHelper(vector<vector<int>> &result, vector<TreeNode> &nodes)
 {
-    if(nodes.size() == 0)
+    if (nodes.size() == 0)
         return;
 
     vector<int> levelNodes;
     vector<TreeNode> nexLevelNodes;
 
-    for(TreeNode node : nodes)
+    for (TreeNode node : nodes)
     {
-        levelNodes.push_back(node.val);        
-        if(node.left != NULL)
+        levelNodes.push_back(node.val);
+        if (node.left != NULL)
             nexLevelNodes.push_back(*node.left);
-        if(node.right != NULL)
+        if (node.right != NULL)
             nexLevelNodes.push_back(*node.right);
     }
     result.push_back(levelNodes);
@@ -686,10 +687,10 @@ void levelOrderHelper(vector<vector<int>>& result, vector<TreeNode>& nodes)
     levelOrderHelper(result, nexLevelNodes);
 }
 
-vector<vector<int>> levelOrderRecursion(TreeNode* root) 
+vector<vector<int>> levelOrderRecursion(TreeNode *root)
 {
     vector<vector<int>> result;
-    if(NULL == root)
+    if (NULL == root)
         return result;
 
     vector<TreeNode> init;
@@ -701,18 +702,18 @@ vector<vector<int>> levelOrderRecursion(TreeNode* root)
 }
 /********************/
 /* 22. Generate Parentheses */
-void back_track(vector<string>& result, string& strTemp, int open, int close, int max)
+void back_track(vector<string> &result, string &strTemp, int open, int close, int max)
 {
-    if(strTemp.length() == 2 * max)
+    if (strTemp.length() == 2 * max)
     {
         result.push_back(strTemp);
         strTemp.clear();
         return;
     }
 
-    if(open < max)
+    if (open < max)
         back_track(result, strTemp.append("("), open + 1, close, max);
-    if(close < open)
+    if (close < open)
         back_track(result, strTemp.append(")"), open, close + 1, max);
 }
 
@@ -731,11 +732,11 @@ int numJewelsInStones(string J, string S)
 {
     int count = 0;
     unordered_set<char> myset;
-    for(char c : J)
+    for (char c : J)
         myset.insert(c);
-    for(char c : S)
+    for (char c : S)
     {
-        if(myset.find(c) != myset.end())
+        if (myset.find(c) != myset.end())
         {
             count++;
         }
@@ -746,7 +747,8 @@ int numJewelsInStones(string J, string S)
 
 /********************/
 /* 141. Linked List Cycle*/
-struct ListNode {
+struct ListNode
+{
     int val;
     ListNode *next;
     ListNode(int x) : val(x), next(NULL) {}
@@ -754,56 +756,56 @@ struct ListNode {
 
 bool hasCycle(ListNode *head)
 {
-    if(head == NULL || head->next == NULL)
+    if (head == NULL || head->next == NULL)
         return false;
 
     ListNode *slow = head, *fast = head->next;
-    while(slow != NULL && fast != NULL)
+    while (slow != NULL && fast != NULL)
     {
-        if(slow == fast)
+        if (slow == fast)
             return true;
         slow = slow->next;
         fast = fast->next;
-        if(fast != NULL)
+        if (fast != NULL)
             fast = fast->next;
     }
 
-    return false; 
+    return false;
 }
 
 /********************/
 /* 9. Palindrome Number */
 bool isPalindrome(int x)
 {
-    if(x < 0)
+    if (x < 0)
         return false;
 
     long long temp = 0;
-    int tempx = x; 
-    while(x != 0)
+    int tempx = x;
+    while (x != 0)
     {
         temp = x % 10 + temp * 10;
         x /= 10;
     }
-    if(temp > INT_MAX)
+    if (temp > INT_MAX)
         temp = 0;
     return tempx == temp;
 }
 
 /********************/
 /* 322. Coin Change*/
-int coinChange(vector<int>& coins, int amount)
+int coinChange(vector<int> &coins, int amount)
 {
     int dp[amount + 1];
-    for(int i = 0; i <= amount; i++)
+    for (int i = 0; i <= amount; i++)
         dp[i] = amount + 1;
-    
+
     dp[0] = 0;
-    for(int i = 1; i <= amount; i++) 
+    for (int i = 1; i <= amount; i++)
     {
-        for(int j = 0; j < coins.size(); j++)
+        for (int j = 0; j < coins.size(); j++)
         {
-            if(i >= coins[j])
+            if (i >= coins[j])
                 dp[i] = std::min(dp[i], dp[i - coins[j]] + 1);
         }
     }
@@ -813,20 +815,20 @@ int coinChange(vector<int>& coins, int amount)
 
 /********************/
 /* 560. Subarray Sum Equals K */
-int subarraySum(vector<int>& nums, int k)
+int subarraySum(vector<int> &nums, int k)
 {
     int count = 0;
     int n = nums.size();
     int sum[n + 1];
     sum[0] = 0;
-    for(int i = 1; i <= nums.size(); i++)
+    for (int i = 1; i <= nums.size(); i++)
         sum[i] = sum[i - 1] + nums[i - 1];
-    
-    for(int i = 0; i <= n; i++)
+
+    for (int i = 0; i <= n; i++)
     {
-        for(int j = i + 1; j <= n; j++)
+        for (int j = i + 1; j <= n; j++)
         {
-            if(sum[j] - sum[i] == k)
+            if (sum[j] - sum[i] == k)
                 count++;
         }
     }
@@ -834,14 +836,14 @@ int subarraySum(vector<int>& nums, int k)
     return count;
 }
 
-int subarraySumHash(vector<int>& nums, int k)
+int subarraySumHash(vector<int> &nums, int k)
 {
-    unordered_map<int, int> sum_map;    
+    unordered_map<int, int> sum_map;
     int sum = 0;
     int count = 0;
     sum_map[0] = 1;
 
-    for(int i = 1; i <= nums.size(); i++)
+    for (int i = 1; i <= nums.size(); i++)
     {
         sum += nums[i - 1];
         count += sum_map[sum - k];
@@ -852,26 +854,26 @@ int subarraySumHash(vector<int>& nums, int k)
 }
 /********************/
 /* 560. Subarray Sum Equals K */
-vector<int> spiralOrder(vector<vector<int>>& matrix) 
+vector<int> spiralOrder(vector<vector<int>> &matrix)
 {
     vector<int> res;
-    if(matrix.size() == 0)
+    if (matrix.size() == 0)
         return res;
 
     int r1 = 0, r2 = matrix.size() - 1;
     int c1 = 0, c2 = matrix[0].size() - 1;
 
-    while(r1 < r2 && c1 < c2)
+    while (r1 < r2 && c1 < c2)
     {
-        for(int i = c1; i < c2; i++)
+        for (int i = c1; i < c2; i++)
             res.push_back(matrix[r1][i]);
-        for(int i = r1; i < r2; i++)
+        for (int i = r1; i < r2; i++)
             res.push_back(matrix[i][c2]);
-        for(int i = c2; i > c1; i--)
+        for (int i = c2; i > c1; i--)
             res.push_back(matrix[r2][i]);
-        for(int i = r2; i > r1; i--)
+        for (int i = r2; i > r1; i--)
             res.push_back(matrix[i][c1]);
-        
+
         c1++;
         c2--;
         r1++;
@@ -883,25 +885,26 @@ vector<int> spiralOrder(vector<vector<int>>& matrix)
 
 /********************/
 /* 412. Fizz Buzz */
-vector<string> fizzBuzz(int n) 
+vector<string> fizzBuzz(int n)
 {
     vector<string> res;
     bool mul3 = false, mul5 = false;
 
-    for(int i = 1; i <= n; i++)
+    for (int i = 1; i <= n; i++)
     {
-        
-        mul3 = false;mul5 = false;
-        if(i % 3 == 0)
+
+        mul3 = false;
+        mul5 = false;
+        if (i % 3 == 0)
             mul3 = true;
-        if(i % 5 == 0)
+        if (i % 5 == 0)
             mul5 = true;
 
-        if(mul3 && mul5)
+        if (mul3 && mul5)
             res.push_back("FizzBuzz");
-        else if(mul3)
+        else if (mul3)
             res.push_back("Fizz");
-        else if(mul5)
+        else if (mul5)
             res.push_back("Buzz");
         else
             res.push_back(std::to_string(i));
@@ -913,15 +916,15 @@ vector<string> fizzBuzz(int n)
 /********************/
 /* 46. Permutations */
 
-void permute_recurse(vector<int>& nums, int begin, vector<vector<int> >& result)
+void permute_recurse(vector<int> &nums, int begin, vector<vector<int>> &result)
 {
-    if(begin >= nums.size())
+    if (begin >= nums.size())
     {
         result.push_back(nums);
         return;
     }
 
-    for(int i = begin; i < nums.size(); i++)
+    for (int i = begin; i < nums.size(); i++)
     {
         std::swap(nums[begin], nums[i]);
         permute_recurse(nums, begin + 1, result);
@@ -930,29 +933,29 @@ void permute_recurse(vector<int>& nums, int begin, vector<vector<int> >& result)
     }
 }
 
-vector<vector<int>> permute(vector<int>& nums)
+vector<vector<int>> permute(vector<int> &nums)
 {
-    vector<vector<int> > result;
+    vector<vector<int>> result;
     permute_recurse(nums, 0, result);
     return result;
 }
 
 /********************/
 /* 88. Merge Sorted Array */
-void merge(vector<int>& nums1, int m, vector<int>& nums2, int n)
+void merge(vector<int> &nums1, int m, vector<int> &nums2, int n)
 {
     vector<int> temp;
-    for(int i = 0; i < m; i++)
+    for (int i = 0; i < m; i++)
         temp.push_back(nums1[i]);
     int i = 0, j = 0, k = 0;
-    while(i < temp.size() && j < nums2.size())
+    while (i < temp.size() && j < nums2.size())
     {
-        if(temp[i] <= nums2[j])
+        if (temp[i] <= nums2[j])
         {
             nums1[k] = temp[i];
             i++;
         }
-        else if(temp[i] > nums2[j])
+        else if (temp[i] > nums2[j])
         {
             nums1[k] = nums2[j];
             j++;
@@ -961,13 +964,13 @@ void merge(vector<int>& nums1, int m, vector<int>& nums2, int n)
         k++;
     }
 
-    if(i < temp.size()) 
+    if (i < temp.size())
     {
         nums1[k] = temp[i];
         i++;
         k++;
     }
-    if(j < nums2.size()) 
+    if (j < nums2.size())
     {
         nums1[k] = nums2[i];
         j++;
@@ -977,25 +980,25 @@ void merge(vector<int>& nums1, int m, vector<int>& nums2, int n)
 
 /********************/
 /* 160. Intersection of Two Linked Lists*/
-ListNode *getIntersectionNode(ListNode *headA, ListNode *headB) 
+ListNode *getIntersectionNode(ListNode *headA, ListNode *headB)
 {
-    ListNode * pa = headA;         
-    ListNode * pb = headB;         
+    ListNode *pa = headA;
+    ListNode *pb = headB;
 
-    if(pa == NULL || pb == NULL)
+    if (pa == NULL || pb == NULL)
         return NULL;
 
-    while(pa != NULL && pb != NULL && pa != pb)
+    while (pa != NULL && pb != NULL && pa != pb)
     {
         pa = pa->next;
         pb = pb->next;
 
-        if(pa == pb)
+        if (pa == pb)
             return pa;
-        
-        if(pa == NULL)
+
+        if (pa == NULL)
             pa = headB;
-        if(pb == NULL)
+        if (pb == NULL)
             pb = headA;
     }
 
@@ -1004,7 +1007,7 @@ ListNode *getIntersectionNode(ListNode *headA, ListNode *headB)
 /********************/
 /* 234. Palindrome Linked List*/
 ListNode *temp;
-bool isPalindrome(ListNode* head) 
+bool isPalindrome(ListNode *head)
 {
     temp = head;
     return check(head);
@@ -1012,22 +1015,23 @@ bool isPalindrome(ListNode* head)
 
 bool check(ListNode *node)
 {
-    if(node == NULL) return true;
-    bool isPal = check(node->next) && (temp->val == node->val); 
+    if (node == NULL)
+        return true;
+    bool isPal = check(node->next) && (temp->val == node->val);
     temp = temp->next;
-    return isPal; 
+    return isPal;
 }
 
 /********************/
 /* 23. Merge k Sorted Lists*/
-ListNode * merge2Lists(ListNode *l1, ListNode *l2)
+ListNode *merge2Lists(ListNode *l1, ListNode *l2)
 {
-    if(l1 == NULL)
+    if (l1 == NULL)
         return l2;
-    if(l2 == NULL)
+    if (l2 == NULL)
         return l1;
-    
-    if(l1->val <= l2->val)
+
+    if (l1->val <= l2->val)
     {
         l1->next = merge2Lists(l1->next, l2);
         return l1;
@@ -1039,52 +1043,52 @@ ListNode * merge2Lists(ListNode *l1, ListNode *l2)
     }
 }
 
-ListNode* mergeKLists(vector<ListNode*>& lists) 
+ListNode *mergeKLists(vector<ListNode *> &lists)
 {
-    if(lists.empty())
+    if (lists.empty())
         return NULL;
     //straight solution
-    while(lists.size() >  1)
+    while (lists.size() > 1)
     {
         lists.push_back(merge2Lists(lists[0], lists[1]));
         lists.erase(lists.begin());
         lists.erase(lists.begin());
     }
 
-    return lists.front();    
+    return lists.front();
 }
 
 struct compare
 {
-    bool operator()(ListNode* n1, ListNode* n2)
+    bool operator()(ListNode *n1, ListNode *n2)
     {
         return n1->val > n2->val;
     }
 };
 
-ListNode* mergeKListsPQ(vector<ListNode*>& lists) 
+ListNode *mergeKListsPQ(vector<ListNode *> &lists)
 {
-    priority_queue<ListNode*, vector<ListNode*>, compare> q;    
-    for(auto l : lists)
+    priority_queue<ListNode *, vector<ListNode *>, compare> q;
+    for (auto l : lists)
     {
-        if(l)
+        if (l)
             q.push(l);
     }
 
-    if(q.empty())
+    if (q.empty())
         return NULL;
-    
+
     ListNode *result = q.top();
     ListNode *tail = result;
     q.pop();
-    if(result->next)
+    if (result->next)
         q.push(result->next);
-    while(!q.empty())
+    while (!q.empty())
     {
         tail->next = q.top();
         q.pop();
         tail = tail->next;
-        if(tail->next)
+        if (tail->next)
             q.push(tail->next);
     }
 
@@ -1093,14 +1097,14 @@ ListNode* mergeKListsPQ(vector<ListNode*>& lists)
 
 /********************/
 /* 344. Reverse String*/
-void reverseString(vector<char>& s)
+void reverseString(vector<char> &s)
 {
     int i = 0, j = s.size() - 1;
-    while(i < j)
+    while (i < j)
     {
         s[i] = s[i] + s[j];
         s[j] = s[i] - s[j];
-        s[j] = s[i] - s[j]; 
+        s[j] = s[i] - s[j];
 
         i++;
         j--;
@@ -1109,46 +1113,42 @@ void reverseString(vector<char>& s)
 
 /********************/
 /* 79. Word Search*/
-bool dfs_find(vector<vector<char> >& board, const string& word, int index, int i, int j)
+bool dfs_find(vector<vector<char>> &board, const string &word, int index, int i, int j)
 {
-    if(i < 0 || i >= board.size() || j < 0 || j >= board[0].size() || index >= word.size() 
-    || board[i][j] == '\0')
+    if (i < 0 || i >= board.size() || j < 0 || j >= board[0].size() || index >= word.size() || board[i][j] == '\0')
         return false;
-    
-    if(word[index] != board[i][j])
+
+    if (word[index] != board[i][j])
         return false;
-    if(index == word.size() - 1)
+    if (index == word.size() - 1)
         return true;
 
     char temp = board[i][j];
     board[i][j] = '\0';
 
-    if(dfs_find(board, word, index + 1, i + 1, j)
-    || dfs_find(board, word, index + 1, i - 1, j)
-    || dfs_find(board, word, index + 1, i, j + 1)
-    || dfs_find(board, word, index + 1, i, j - 1))
+    if (dfs_find(board, word, index + 1, i + 1, j) || dfs_find(board, word, index + 1, i - 1, j) || dfs_find(board, word, index + 1, i, j + 1) || dfs_find(board, word, index + 1, i, j - 1))
         return true;
 
     board[i][j] = temp;
     return false;
 }
 
-bool exist(vector<vector<char>>& board, string word)
+bool exist(vector<vector<char>> &board, string word)
 {
-    if(word.empty())
+    if (word.empty())
         return true;
-    if(board.size() == 0)
+    if (board.size() == 0)
         return false;
-    
+
     int r = board.size();
     int c = board[0].size();
 
-    for(int i = 0; i < r; i++)
+    for (int i = 0; i < r; i++)
     {
-        for(int j = 0; j < c; j++)
+        for (int j = 0; j < c; j++)
         {
             bool res = dfs_find(board, word, 0, i, j);
-            if(res)
+            if (res)
                 return res;
         }
     }
@@ -1158,13 +1158,13 @@ bool exist(vector<vector<char>>& board, string word)
 
 /********************/
 /* 203. Remove Linked List Elements*/
-ListNode* removeElements(ListNode* head, int val) 
+ListNode *removeElements(ListNode *head, int val)
 {
-    ListNode ** ppl = &head;    
+    ListNode **ppl = &head;
 
-    while(*ppl != NULL)
+    while (*ppl != NULL)
     {
-        if((*ppl)->val == val)
+        if ((*ppl)->val == val)
         {
             *ppl = (*ppl)->next;
         }
@@ -1178,53 +1178,53 @@ ListNode* removeElements(ListNode* head, int val)
 }
 /********************/
 /* 103. Binary Tree Zigzag Level Order Traversal*/
-vector<vector<int>> zigzagLevelOrder(TreeNode* root)
+vector<vector<int>> zigzagLevelOrder(TreeNode *root)
 {
-    vector<vector<int> > result;
-    if(NULL == root)
+    vector<vector<int>> result;
+    if (NULL == root)
         return result;
 
-    stack<TreeNode*> st1;
-    stack<TreeNode*> st2;
+    stack<TreeNode *> st1;
+    stack<TreeNode *> st2;
     int lvl = 0;
 
     st1.push(root);
-    while(1)    
+    while (1)
     {
-        if(st1.empty() && st2.empty())
+        if (st1.empty() && st2.empty())
             break;
-        
+
         vector<int> tempVec;
 
-        while(!st1.empty())
+        while (!st1.empty())
         {
             TreeNode *pNode = st1.top();
             tempVec.push_back(pNode->val);
-            if(pNode->left)
+            if (pNode->left)
                 st2.push(pNode->left);
-            if(pNode->right)
+            if (pNode->right)
                 st2.push(pNode->right);
             st1.pop();
         }
 
-        if(tempVec.size() > 0)
+        if (tempVec.size() > 0)
         {
             result.push_back(tempVec);
             tempVec.clear();
         }
 
-        while(!st2.empty())
+        while (!st2.empty())
         {
             TreeNode *pNode = st2.top();
             tempVec.push_back(pNode->val);
-            if(pNode->left)
+            if (pNode->left)
                 st1.push(pNode->left);
-            if(pNode->right)
+            if (pNode->right)
                 st1.push(pNode->right);
             st2.pop();
         }
 
-        if(tempVec.size() > 0)
+        if (tempVec.size() > 0)
             result.push_back(tempVec);
     }
 
@@ -1232,16 +1232,16 @@ vector<vector<int>> zigzagLevelOrder(TreeNode* root)
 }
 /********************/
 /* 215. Kth Largest Element in an Array*/
-int findKthLargest(vector<int>& nums, int k)
+int findKthLargest(vector<int> &nums, int k)
 {
-    if(0 == nums.size())
+    if (0 == nums.size())
         return 0;
 
     priority_queue<int, vector<int>, std::greater<int>> pq;
-    for(int i = 0; i < nums.size(); i++)
+    for (int i = 0; i < nums.size(); i++)
     {
         pq.push(nums[i]);
-        if(pq.size() > k)
+        if (pq.size() > k)
             pq.pop();
     }
 
@@ -1249,27 +1249,29 @@ int findKthLargest(vector<int>& nums, int k)
 }
 /********************/
 /* 138. Copy List with Random Pointer*/
-class Node {
-public:
+class Node
+{
+  public:
     int val;
-    Node* next;
-    Node* random;
+    Node *next;
+    Node *random;
 
     Node() {}
 
-    Node(int _val, Node* _next, Node* _random) {
+    Node(int _val, Node *_next, Node *_random)
+    {
         val = _val;
         next = _next;
         random = _random;
     }
 };
 
-map<Node*, Node*> clone_node_map;
+map<Node *, Node *> clone_node_map;
 Node *get_clone_node(Node *oldNode)
 {
-    if(NULL == oldNode)
+    if (NULL == oldNode)
         return NULL;
-    if(clone_node_map.find(oldNode) != clone_node_map.end())
+    if (clone_node_map.find(oldNode) != clone_node_map.end())
     {
         return clone_node_map[oldNode];
     }
@@ -1280,16 +1282,16 @@ Node *get_clone_node(Node *oldNode)
     }
 }
 
-Node* copyRandomList(Node* head) 
+Node *copyRandomList(Node *head)
 {
-    if(NULL == head)
+    if (NULL == head)
         return head;
 
     Node *pNewHead = new Node(head->val, NULL, NULL);
     clone_node_map[head] = pNewHead;
     Node *pOldHead = head;
 
-    while(pOldHead)
+    while (pOldHead)
     {
         pNewHead->next = get_clone_node(pOldHead->next);
         pNewHead->random = get_clone_node(pOldHead->random);
@@ -1302,9 +1304,9 @@ Node* copyRandomList(Node* head)
 }
 /********************/
 /* 98. Validate Binary Search Tree*/
-void get_inorder(TreeNode *root, vector<TreeNode*>& vecInorder)
+void get_inorder(TreeNode *root, vector<TreeNode *> &vecInorder)
 {
-    if(root == NULL)
+    if (root == NULL)
         return;
 
     get_inorder(root->left, vecInorder);
@@ -1312,17 +1314,17 @@ void get_inorder(TreeNode *root, vector<TreeNode*>& vecInorder)
     get_inorder(root->right, vecInorder);
 }
 
-bool isValidBST(TreeNode* root)
+bool isValidBST(TreeNode *root)
 {
-    if(NULL == root)
+    if (NULL == root)
         return true;
 
-    vector<TreeNode*> vecInorder;
+    vector<TreeNode *> vecInorder;
     get_inorder(root, vecInorder);
 
-    for(int i = 0; i < vecInorder.size() - 1; i++)
+    for (int i = 0; i < vecInorder.size() - 1; i++)
     {
-        if(vecInorder[i]->val >= vecInorder[i + 1]->val)
+        if (vecInorder[i]->val >= vecInorder[i + 1]->val)
             return false;
     }
 
@@ -1330,9 +1332,9 @@ bool isValidBST(TreeNode* root)
 }
 /********************/
 /* 226. Invert Binary Tree*/
-TreeNode* invertTree(TreeNode* root)
+TreeNode *invertTree(TreeNode *root)
 {
-    if(root == NULL)
+    if (root == NULL)
         return NULL;
     TreeNode *pTemp = root->left;
     root->left = invertTree(root->right);
@@ -1343,23 +1345,23 @@ TreeNode* invertTree(TreeNode* root)
 
 /********************/
 /* 543. Diameter of Binary Tree*/
-int calTreeNodeLen(TreeNode *root, int& max)
+int calTreeNodeLen(TreeNode *root, int &max)
 {
-    if(NULL == root)
+    if (NULL == root)
         return 0;
 
-    int left_len = calTreeNodeLen(root->left, max);    
-    int right_len = calTreeNodeLen(root->right, max);    
+    int left_len = calTreeNodeLen(root->left, max);
+    int right_len = calTreeNodeLen(root->right, max);
 
     max = std::max(max, left_len + right_len + 1);
     return std::max(left_len, right_len) + 1;
 }
 
-int diameterOfBinaryTree(TreeNode* root)
+int diameterOfBinaryTree(TreeNode *root)
 {
-    if(NULL == root)
+    if (NULL == root)
         return 0;
-    
+
     int max = 1;
     calTreeNodeLen(root, max);
 
@@ -1367,26 +1369,26 @@ int diameterOfBinaryTree(TreeNode* root)
 }
 /********************/
 /* 199. Binary Tree Right Side View*/
-vector<int> rightSideView(TreeNode* root) 
+vector<int> rightSideView(TreeNode *root)
 {
     vector<int> res;
-    if(NULL == root)
+    if (NULL == root)
         return res;
 
-    queue<TreeNode*> node_queue;
+    queue<TreeNode *> node_queue;
     node_queue.push(root);
 
-    while(!node_queue.empty())
+    while (!node_queue.empty())
     {
         int len = node_queue.size();
-        for(int i = 0; i < len; i++)
+        for (int i = 0; i < len; i++)
         {
             TreeNode *pTemp = node_queue.front();
-            if(pTemp->left)
+            if (pTemp->left)
                 node_queue.push(pTemp->left);
-            if(pTemp->right)
+            if (pTemp->right)
                 node_queue.push(pTemp->right);
-            if(i == len - 1)
+            if (i == len - 1)
                 res.push_back(pTemp->val);
 
             node_queue.pop();
@@ -1397,15 +1399,15 @@ vector<int> rightSideView(TreeNode* root)
 }
 /********************/
 /* 94. Binary Tree Inorder Traversal*/
-vector<int> inorderTraversal(TreeNode* root)
+vector<int> inorderTraversal(TreeNode *root)
 {
     vector<int> res;
-    stack<TreeNode*> st;
+    stack<TreeNode *> st;
     TreeNode *pTempRoot = root;
 
-    while(pTempRoot || !st.empty())
+    while (pTempRoot || !st.empty())
     {
-        while(pTempRoot)
+        while (pTempRoot)
         {
             st.push(pTempRoot);
             pTempRoot = pTempRoot->left;
@@ -1423,24 +1425,24 @@ vector<int> inorderTraversal(TreeNode* root)
 
 /********************/
 /* 124. Binary Tree Maximum Path Sum*/
-int getMaxSum(TreeNode *root, int& max)
+int getMaxSum(TreeNode *root, int &max)
 {
-    if(root == NULL)
+    if (root == NULL)
         return 0;
-    
+
     int left_max = getMaxSum(root->left, max);
     left_max = left_max > 0 ? left_max : 0;
     int right_max = getMaxSum(root->right, max);
     right_max = right_max > 0 ? right_max : 0;
 
     int temp = root->val + left_max + right_max;
-    if(temp > max)
+    if (temp > max)
         max = temp;
 
     return root->val + std::max(left_max, right_max);
 }
 
-int maxPathSum(TreeNode* root)
+int maxPathSum(TreeNode *root)
 {
     int max = INT_MIN;
     getMaxSum(root, max);
@@ -1448,21 +1450,21 @@ int maxPathSum(TreeNode* root)
 }
 /********************/
 /* 236. Lowest Common Ancestor of a Binary Tree*/
-bool find_path(TreeNode* root, TreeNode* pTargetNode, vector<TreeNode*>& vecPath)
+bool find_path(TreeNode *root, TreeNode *pTargetNode, vector<TreeNode *> &vecPath)
 {
-    if(NULL == root)
+    if (NULL == root)
         return false;
 
     vecPath.push_back(root);
-    if(root == pTargetNode)
+    if (root == pTargetNode)
         return true;
     else
     {
         bool bFindLeft = find_path(root->left, pTargetNode, vecPath);
-        if(!bFindLeft)
+        if (!bFindLeft)
         {
             bool bFindRight = find_path(root->right, pTargetNode, vecPath);
-            if(!bFindRight)
+            if (!bFindRight)
             {
                 vecPath.pop_back();
                 return false;
@@ -1473,20 +1475,20 @@ bool find_path(TreeNode* root, TreeNode* pTargetNode, vector<TreeNode*>& vecPath
     return true;
 }
 
-TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q) 
+TreeNode *lowestCommonAncestor(TreeNode *root, TreeNode *p, TreeNode *q)
 {
-    if(NULL == root)
+    if (NULL == root)
         return NULL;
-    vector<TreeNode*> vec_p, vec_q;
+    vector<TreeNode *> vec_p, vec_q;
     bool bLeft = find_path(root, p, vec_p);
     bool bRight = find_path(root, q, vec_q);
-    if(bLeft && bRight)
+    if (bLeft && bRight)
     {
         int i = 0, j = 0;
         TreeNode *lca = root;
-        while(i < vec_p.size() && j < vec_q.size())
+        while (i < vec_p.size() && j < vec_q.size())
         {
-            if(vec_p[i] == vec_q[j])
+            if (vec_p[i] == vec_q[j])
             {
                 lca = vec_p[i];
                 i++;
@@ -1503,24 +1505,23 @@ TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q)
 }
 /********************/
 /* 295. Find Median from Data Stream*/
-class MedianFinder 
+class MedianFinder
 {
-public:
+  public:
     /** initialize your data structure here. */
-    MedianFinder() 
+    MedianFinder()
     {
-        
     }
-    
-    void addNum(int num) 
+
+    void addNum(int num)
     {
-        data.insert(std::lower_bound(data.begin(), data.end(), num), num);    
+        data.insert(std::lower_bound(data.begin(), data.end(), num), num);
     }
-    
-    double findMedian() 
+
+    double findMedian()
     {
         int n = data.size();
-        if(n & 1)    
+        if (n & 1)
             return data[n / 2];
         else
         {
@@ -1528,48 +1529,153 @@ public:
         }
     }
 
-private:
+  private:
     vector<int> data;
 };
-class MedianFinder2Heaps //with two heap 
-{ 
-    public: 
-    /** initialize your data structure here. */ 
-    MedianFinder2Heaps() 
+class MedianFinder2Heaps //with two heap
+{
+  public:
+    /** initialize your data structure here. */
+    MedianFinder2Heaps()
     {
     }
-    
-    void addNum(int num) 
+
+    void addNum(int num)
     {
         low.push(num);
 
         high.push(low.top());
         low.pop();
 
-        if(low.size() < high.size())
+        if (low.size() < high.size())
         {
             low.push(high.top());
             high.pop();
         }
     }
-    
-    double findMedian() 
+
+    double findMedian()
     {
-        return low.size() > high.size()? low.top() : (low.top() + high.top()) * 0.5;
+        return low.size() > high.size() ? low.top() : (low.top() + high.top()) * 0.5;
     }
 
-private:
+  private:
     priority_queue<int> low;
     priority_queue<int, vector<int>, std::greater<int>> high;
 };
 /********************/
-/* */
+/* 301. Remove Invalid Parentheses */
+vector<string> removeInvalidParentheses(string s)
+{
+    map<char, int> par_map;
+    par_map['('] = -1;
+    par_map[')'] = 1;
+
+    int sum = 0;
+    for (char c : s)
+    {
+        if (par_map.find(c) != par_map.end())
+        {
+            sum += par_map[c];
+            if (c == ')')
+            {
+                //if(sum > 0)//delete ')'
+            }
+        }
+    }
+}
+
+/********************/
+/* 17. Letter Combinations of a Phone Number*/
+map<char, string> num_map;
+void constructStr(const string &digits, int index, string strRes, vector<string> &vecRes)
+{
+    if (strRes.size() == digits.size())
+    {
+        vecRes.push_back(strRes);
+        return;
+    }
+
+    char cur_ch = digits[index];
+    const string &cur_str = num_map[cur_ch];
+
+    for (char c : cur_str)
+    {
+        constructStr(digits, index + 1, strRes + c, vecRes);
+    }
+}
+
+vector<string> letterCombinations(string digits)
+{
+    vector<string> res;
+    if (digits.empty())
+        return res;
+
+    num_map['2'] = "abc";
+    num_map['3'] = "def";
+    num_map['4'] = "ghi";
+    num_map['5'] = "jkl";
+    num_map['6'] = "mno";
+    num_map['7'] = "pqrs";
+    num_map['8'] = "tuv";
+    num_map['9'] = "wxyz";
+
+    constructStr(digits, 0, "", res);
+
+    return res;
+}
+/********************/
+/* 380. Insert Delete GetRandom O(1)*/
+class RandomizedSet
+{
+  public:
+    /** Initialize your data structure here. */
+    RandomizedSet()
+    {
+    }
+
+    /** Inserts a value to the set. Returns true if the set did not already contain the specified element. */
+    bool insert(int val)
+    {
+        if (idx_map.find(val) != idx_map.end())
+            return false;
+        nums.emplace_back(val);
+        idx_map[val] = nums.size() - 1;
+        return true;
+    }
+
+    /** Removes a value from the set. Returns true if the set contained the specified element. */
+    bool remove(int val)
+    {
+        if (idx_map.find(val) == idx_map.end())
+            return false;
+        int last = nums.back();
+        idx_map[last] = idx_map[val];
+        nums[idx_map[last]] = last;
+        nums.pop_back();
+        idx_map.erase(val);
+        return true;
+    }
+
+    /** Get a random element from the set. */
+    int getRandom()
+    {
+        return nums[rand() % nums.size()];
+    }
+
+  private:
+    vector<int> nums;
+    unordered_map<int, int> idx_map;
+};
+
+/********************/
+/* 139. Word Break*/
 
 /********************/
 
 int main(int argc, char **argv)
 {
-/*vector<int> arr = {2, 7, 11, 15};
+    /*vector<int> arr = {2, 7, 11, 15};
 int target = 9;
 vector<int> result;
 result = twoSum(arr, target);
@@ -1577,8 +1683,8 @@ for(int i : result)
 {
     cout << " " << i << endl;
 }*/
-int a = -321;
-cout << "==>" << reverse(a);
+    int a = -321;
+    cout << "==>" << reverse(a);
 
-return 0;
+    return 0;
 }
