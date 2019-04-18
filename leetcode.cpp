@@ -9,6 +9,10 @@
 #include <unordered_set>
 #include <climits>
 #include <unordered_map>
+#include <stdio.h>
+#include <sstream>
+#include <deque>
+#include <list>
 
 using std::cin;
 using std::cout;
@@ -24,6 +28,8 @@ using std::string;
 using std::unordered_map;
 using std::unordered_set;
 using std::vector;
+using std::deque;
+using std::list;
 
 /**
  * leetcode most frequency problems
@@ -1670,6 +1676,491 @@ class RandomizedSet
 
 /********************/
 /* 139. Word Break*/
+
+/********************/
+/* 946. Validate Stack Sequences*/
+bool validateStackSequences(vector<int>& pushed, vector<int>& popped)
+{
+    if(pushed.size() == 0 && popped.size() == 0)
+        return true;
+
+    if(pushed.size() == 0 || popped.size() == 0)
+        return false;
+
+    bool bValid = true;
+    
+    stack<int> st_data;
+    int j = 0;
+    for(int i = 0; i < popped.size(); i++)
+    {
+        while(st_data.size() == 0 || st_data.top() != popped[i]) 
+        {
+            if(j == pushed.size())
+                break;
+
+            st_data.push(pushed[j]);            
+            j++;
+        }
+
+        if(st_data.top() != popped[i])
+        {
+            bValid = false;
+            break;
+        }
+        
+        st_data.pop();
+    }
+
+    return bValid; 
+}
+
+/********************/
+/* 255. Verify Preorder Sequence in Binary Search Tree*/
+bool verifyPreorderHelper(vector<int>& preorder, int s, int e)
+{
+    if(preorder.size() == 0)
+        return true;
+    if(s >= e)
+        return true;
+
+    int nRoot = preorder[s]; //root value
+    int left = s + 1; 
+    for(;left < e; left++)
+    {
+        if(preorder[left] > nRoot)
+            break;
+    }
+
+    for(int j = left; j < e; j++)
+    {
+        if(preorder[j] < nRoot)
+            return false;
+    }
+
+    bool bLeftValid = verifyPreorderHelper(preorder, s + 1, left);
+    if(bLeftValid)
+    {
+        bool bRightValid = verifyPreorderHelper(preorder, left, e);
+        return bRightValid;
+    }
+
+    return false;
+}
+
+bool verifyPreorder(vector<int>& preorder)
+{
+    return verifyPreorderHelper(preorder, 0, preorder.size());
+}
+
+/********************/
+/* 113. Path Sum II*/
+void pathSumHelper(TreeNode *root, int sum, int curSum, vector<int>& vecTemp, vector<vector<int> >& res)
+{
+    if(NULL == root)
+        return;
+
+    vecTemp.push_back(root->val);
+    curSum += root->val;
+    bool bLeaf = !root->left && !root->right;
+    if(bLeaf && curSum == sum)
+    {
+        res.push_back(vecTemp); 
+    }
+    else
+    {
+        pathSumHelper(root->left, sum ,curSum, vecTemp, res);
+        pathSumHelper(root->right, sum ,curSum, vecTemp, res);
+    }
+
+    vecTemp.pop_back();
+}
+
+vector<vector<int>> pathSum(TreeNode* root, int sum) 
+{
+    vector<vector<int> > res;
+    if(NULL == root)
+        return res;
+    vector<int> temp;
+    int curSum = 0;
+    pathSumHelper(root, sum, curSum, temp, res);
+    return res;
+}
+
+/********************/
+/* 426. Convert Binary Search Tree to Sorted Doubly Linked List*/
+void treeToDoublyListHelper(TreeNode *root, TreeNode **ppLastNode)
+{
+    if(NULL == root)
+        return;
+
+    if(root->left)
+        treeToDoublyListHelper(root->left, ppLastNode);
+
+    root->left = *ppLastNode;
+    if(*ppLastNode)
+        (*ppLastNode)->right = root;
+
+    *ppLastNode = root;
+
+    if(root->right)
+        treeToDoublyListHelper(root->right, ppLastNode);
+}
+
+TreeNode* treeToDoublyList(TreeNode* root) 
+{
+    if(NULL == root)
+        return NULL;
+    TreeNode *ppLastNode = NULL;
+    treeToDoublyListHelper(root, &ppLastNode);
+
+    TreeNode *pCpLastNode = ppLastNode;
+    while(1)
+    {
+        TreeNode *pLeft = (ppLastNode)->left;
+        if(pLeft)
+            (ppLastNode) = pLeft;
+        else
+        {
+            ppLastNode->left = pCpLastNode;
+            pCpLastNode->right = ppLastNode;
+            return ppLastNode;
+        }
+    }
+
+    return NULL;
+}
+/********************/
+/* 136. Single Number*/
+int singleNumber(vector<int>& nums) 
+{
+    if(nums.size() == 0)
+        return 0;
+
+    int res = nums[0];
+    for(int i = 1; i < nums.size(); i++)
+    {
+        res ^= nums[i];
+    }
+
+    return res;
+}
+/********************/
+/* 264. Ugly Number II*/
+int nthUglyNumber(int n)
+{
+    if(0 >= n)
+        return 0;
+    if(1 == n)
+        return 1;
+    vector<int> vecUgly(n);
+
+    int p2 = 0, p3 = 0, p5 = 0;
+    vecUgly[0] = 1;
+
+    for(int i = 1; i < n; i++)
+    {
+        vecUgly[i] = std::min(vecUgly[p2] * 2, std::min(vecUgly[p3] * 3, vecUgly[p5] * 5));
+        if(vecUgly[i] == vecUgly[p2] * 2)
+            p2++;
+        if(vecUgly[i] == vecUgly[p3] * 3)
+            p3++;
+        if(vecUgly[i] == vecUgly[p5] * 5)
+            p5++;
+    }
+
+    return vecUgly[n - 1];
+}
+/********************/
+/* 179. Largest Number*/
+string largestNumber(vector<int>& nums)
+{
+    string result = "0";
+    if(0 == nums.size())
+        return result;
+
+    std::sort(nums.begin(), nums.end(), [&](int a, int b)
+    {
+        string tempAb = std::to_string(a) + std::to_string(b);
+        string tempBa = std::to_string(b) + std::to_string(a);
+        return tempAb > tempBa;
+    });
+
+    for(int i = 0; i < nums.size(); i++)
+    {
+        if(result == "0")
+            result = "";
+        result += std::to_string(nums[i]);
+    }
+    return result;
+}
+/********************/
+/* 387. First Unique Character in a String*/
+int firstUniqChar(string s)
+{
+    int ch_map[256];
+    for(int i = 0; i < 256; i++)
+        ch_map[i] = 0;
+    for(char c : s)
+    {
+        ch_map[c]++;
+    }
+
+    for(char c : s)
+        if(ch_map[c] == 1)
+            return s.find_first_of(c, 0);
+
+    return -1;
+}
+
+/********************/
+/* 49. Group Anagrams*/
+vector<vector<string>> groupAnagrams(vector<string>& strs) 
+{
+    unordered_map<string, vector<string>> res_map;
+    for(string& str : strs)
+    {
+        string temp = str;
+        std::sort(temp.begin(), temp.end());
+        if(res_map.find(temp) != res_map.end())
+            res_map[temp].push_back(str);
+        else
+        {
+            vector<string> vecTemp;
+            vecTemp.push_back(str);
+            res_map[temp] = vecTemp;
+        }
+    }
+
+    vector<vector<string>> result;
+    for(auto it = res_map.begin(); it != res_map.end(); it++)
+       result.push_back(it->second); 
+
+    return result;
+}
+
+/********************/
+/* 34. Find First and Last Position of Element in Sorted Array*/
+int find_first_target_num(vector<int>& nums, int target, int start, int end)
+{
+    if(start > end)
+        return -1;
+    int mid = (start + end) / 2;
+    if(nums[mid] == target)
+    {
+        if(mid == 0 || nums[mid - 1] != target)
+            return mid;
+        else
+            end = mid - 1;
+    }
+    else if(nums[mid] > target)
+        end = mid - 1;
+    else
+        start = mid + 1;
+    
+    return find_first_target_num(nums, target, start, end);
+}
+
+int find_last_target_num(vector<int>& nums, int target, int start, int end)
+{
+    if(start > end)
+        return -1;
+    int mid = (start + end) / 2;
+    if(nums[mid] == target)
+    {
+        if(mid == nums.size() - 1 || nums[mid + 1] != target)
+            return mid;
+        else
+            start = mid + 1;
+    }
+    else if(nums[mid] > target)
+        end = mid - 1;
+    else
+        start = mid + 1;
+    
+    return find_last_target_num(nums, target, start, end);
+}
+
+vector<int> searchRange(vector<int>& nums, int target)
+{
+    vector<int> res(2, -1);
+    if(nums.size() == 0)
+    {
+        return res;
+    }
+
+    int s = find_first_target_num(nums, target, 0, nums.size() - 1);
+    int e = find_last_target_num(nums, target, 0, nums.size() - 1);
+
+    res[0] = s;    
+    res[1] = e;    
+    return res;
+}
+/********************/
+/* 297. Serialize and Deserialize Binary Tree*/
+class Codec {
+public:
+
+    // Encodes a tree to a single string.
+    string serialize(TreeNode* root) {
+        string result = "";
+        if(root == NULL)
+        {
+            result = "null,";
+            return result;
+        }
+
+        result += std::to_string(root->val);
+        result += ",";
+
+        result += serialize(root->left);
+        result += serialize(root->right);
+
+        std::cout << result << endl;
+        return result;
+    }
+
+    void construct_tree(list<string>& vecNodes, TreeNode **root)
+    {
+        if(vecNodes.size() == 0)
+            return;
+
+        if(vecNodes.front() == "null") 
+        {
+            vecNodes.pop_front();
+            *root = NULL;
+            return;
+        }
+
+        int val = std::atoi(vecNodes.front().c_str());
+        *root = new TreeNode(val);
+        vecNodes.pop_front();
+
+        construct_tree(vecNodes, &((*root)->left));
+        construct_tree(vecNodes, &((*root)->right));
+    }
+
+    // Decodes your encoded data to tree.
+    TreeNode* deserialize(string data) {
+        if(data.empty())
+            return NULL;
+
+        list<string> vecNodes;
+        std::stringstream ss(data);        
+        string token;
+        while (getline(ss,token, ','))
+        {
+            vecNodes.push_back(token); 
+        }
+
+        if(vecNodes.size() == 0)
+            return NULL;
+        
+        TreeNode *root = NULL;
+        construct_tree(vecNodes, &root);
+
+        return root;
+    }
+};
+/********************/
+/* 260. Single Number III*/
+int find_1bit_index(int i)
+{
+    int temp = 1;
+    int idx = 0;
+    while(temp & i == 0)
+    {
+        temp = temp << 1;
+        idx++;
+    }
+
+    return idx;
+}
+
+bool is_idx_bit_1(int i, int idx)
+{
+    int temp = 1 << idx;
+    return temp & i; 
+}
+
+vector<int> singleNumberIII(vector<int>& nums) 
+{
+    vector<int> result;    
+    if(nums.size() == 0)
+        return result;
+    int temp = 0; 
+    for(int i : nums)
+        temp ^= i;
+
+    int targetIdx = find_1bit_index(temp);
+    int m = 0, n = 0;
+    for(int i : nums)     
+    {
+        if(is_idx_bit_1(i, targetIdx))
+            m ^= i;
+        else
+            n ^= i;
+    }
+
+    result.push_back(m);
+    result.push_back(n);
+    return result;
+}
+/********************/
+/* 137. Single Number II*/
+int singleNumberII(vector<int>& nums) 
+{
+    const int BIT_COUNT = 32;
+    int bits[BIT_COUNT];
+    for(int i : nums)
+    {
+        int64_t bitInit = 1;
+        for(int j = 0; j < BIT_COUNT; j++)
+        {
+            bits[j] += (bitInit & i);
+            bitInit = bitInit << 1;
+        }
+    }
+
+    int result = 0;
+    for(int i = BIT_COUNT - 1; i >= 0; i--)
+    {
+        result = result << 1;
+        result += bits[i] % 3;
+    }
+
+    return result;
+}
+/********************/
+/* 239. Sliding Window Maximum*/
+vector<int> maxSlidingWindow(vector<int>& nums, int k)
+{
+    vector<int> result;
+    if(nums.size() == 0)
+        return result;
+    deque<int> index;    
+
+    for(int i = 0; i < k; i++)
+    {
+        while(!index.empty() && nums[i] > nums[index.back()])
+            index.pop_back();
+        index.push_back(i);
+    }
+
+    for(int i = k; i < nums.size(); i++)
+    {
+        result.push_back(nums[index.front()]);
+
+        while(!index.empty() && nums[i] > nums[index.back()])
+            index.pop_back();
+        if(!index.empty() && index.front() < (i - k))
+            index.pop_front();
+
+        index.push_back(i);
+    }
+
+    result.push_back(nums[index.front()]);
+    return result;
+}
 
 /********************/
 
