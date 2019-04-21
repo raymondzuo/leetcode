@@ -2161,6 +2161,111 @@ vector<int> maxSlidingWindow(vector<int>& nums, int k)
     result.push_back(nums[index.front()]);
     return result;
 }
+/********************/
+/* 76. Minimum Window Substring*/
+string minWindow(string s, string t) 
+{
+    if(s.empty() || t.empty())
+        return "";
+
+    unordered_map<char, int> dict;
+    unordered_map<char, int> window;
+
+    for(char c : t)
+        dict[c]++;
+
+    int require = dict.size();
+    int form = 0;
+
+    int ans[] = {-1, 0, 0};
+    int l = 0, r = 0;
+
+    while(r < s.size())
+    {
+        char c = s[r];
+        window[c]++;
+
+        if(dict.find(c) != dict.end() && dict[c] == window[c])
+            form++;
+
+        while(form == require && l <= r)
+        {
+            int len = r - l + 1;
+            if(ans[0] == -1 || len < ans[0])
+            {
+                ans[0] = len;
+                ans[1] = l;
+                ans[2] == r;
+            }
+
+            char tempLeft = s[l];
+            window[tempLeft]--;
+            if(dict.find(tempLeft) != dict.end() && window[tempLeft] != dict[tempLeft])
+                form--;
+
+            l++;
+        }
+
+        r++;
+    }
+
+    if(ans[0] == -1)
+        return "";
+    else
+    {
+        return s.substr(l, ans[0]);
+    }
+}
+/********************/
+/* 139. Word Break*/
+bool wordBreak(string s, vector<string>& wordDict)
+{
+    if(s.empty())
+        return false;
+    if(wordDict.size() == 0)
+        return true;
+
+    bool dp[s.length() + 1] = {0};
+    dp[0] = 1;
+
+    for(int i = 1; i <= s.length(); i++)
+    {
+        for(int j = 0; j < i; j++)
+        {
+            auto find = std::find(wordDict.begin(), wordDict.end(), s.substr(j, i - j));
+            if(dp[j] && find != wordDict.end())
+            {
+                dp[i] = 1;
+                break;
+            }
+        }
+    }
+
+    return dp[s.length()];
+}
+
+/********************/
+/* 347. Top K Frequent Elements*/
+vector<int> topKFrequent(vector<int>& nums, int k) 
+{
+    unordered_map<int,int> nmap;
+    for(int i : nums)
+        nmap[i]++;
+
+    vector<int> res;
+    priority_queue<pair<int, int> > pq;
+    for(auto it = nmap.begin(); it != nmap.end(); it++)
+    {
+        pq.push(std::make_pair(it->second, it->first));
+        if(pq.size() > nmap.size() - k)
+        {
+            res.push_back(pq.top().second);
+            pq.pop();
+        }
+    }
+
+    return res;
+}
 
 /********************/
 
