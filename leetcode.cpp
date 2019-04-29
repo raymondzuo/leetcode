@@ -1,4 +1,6 @@
 #include <iostream>
+#include <stdio.h>
+#include <cstring>
 #include <string>
 #include <vector>
 #include <map>
@@ -2265,6 +2267,263 @@ vector<int> topKFrequent(vector<int>& nums, int k)
     }
 
     return res;
+}
+/********************/
+/* 67. Add Binary*/
+string addBinary(string a, string b) 
+{
+    string s = "";
+    int carry = 0, lena = a.length() - 1, lenb = b.length() - 1;
+
+    while(lena >= 0 || lenb >= 0 || carry == 1)
+    {
+        carry += lena >= 0 ? a[lena--] - '0': 0; 
+        carry += lenb >= 0 ? b[lenb--] - '0': 0; 
+        s = char((carry % 2) + '0') + s;
+
+        carry = carry / 2;
+    }
+
+    return s;
+}
+/********************/
+/* 394. Decode String*/
+string decodeString(string s)
+{
+    string result = "";
+    string strNum = "";
+    int num = 0;
+
+    stack<char> st;
+    int be = -1, e = -1;//first [ and last ]
+
+    for(int i = 0; i < s.length(); i++)
+    {
+        char c = s[i];
+        if('[' == c)
+        {
+            if(-1 == be)
+            {
+                if(!strNum.empty())
+                    num = std::atoi(strNum.c_str());
+                be = i;
+            }
+            st.push(c);
+        }
+        else if(']' == c)
+        {
+            st.pop();
+            if(st.empty())
+            {
+                e = i;
+                for(int j = 0; j < num; j++)
+                {
+                    result += decodeString(s.substr(be + 1, e - be - 1));
+                }
+
+                be = -1;
+                strNum = "";
+                num = 0;
+            }
+        }
+        else
+        {
+            if(c >= '0' && c <= '9')
+                strNum += c;
+            else if(-1 != be)
+                result += c;
+        }
+    }
+
+    return result;
+}
+
+/********************/
+/* 151. Reverse Words in a String*/
+bool reverseStr(string& str, int s, int e)
+{
+    while(s <= e)
+    {
+        char temp = str[s];
+        str[s] = str[e];
+        str[e] = temp;
+
+        s++;
+        e--;
+    }
+
+    return true;
+}
+
+string reverseWords(string s) 
+{
+    reverseStr(s, 0, s.length() - 1); 
+
+    string result;
+    int i = 0, j = s.length() - 1;
+    while(i <= j)
+    {
+        if(s[i] == ' ')
+            i++;
+        if(s[j] == ' ')
+            j--;
+    }
+
+    if(i > j)
+        return "";
+
+    s = s.substr(i, j - i + 1);
+
+    for(int i = 0; i < s.length(); i++)
+    {
+        char c = s[i];
+        result += c;
+
+        while(c == ' ' && s[i + 1] == ' ')
+            i++;
+    }
+
+    
+}
+/********************/
+/* 493. Reverse Pairs*/
+int merge_and_count(vector<int>& nums, int start, int mid, int end)
+{
+    int cnt = 0;
+    int len_left = mid - start + 1;
+    int len_right = end - mid;
+
+    int left[len_left], right[len_right];
+
+    int i = mid, j = end;
+    while(i >= start && j > mid)
+    {
+        if(nums[i] > (2 * nums[j]))
+        {
+            cnt +=  j - mid; 
+            i--;
+            j = end;//reset j
+        }
+        else
+            j--;
+    }
+
+    i = 0, j = 0;
+    for(; i <= len_left; i++)
+        left[i] = nums[start + i];
+    for(; j < len_right; j++)
+        right[j] = nums[mid + j + 1];
+    
+    i = 0, j = 0;
+    int k = start;
+    while(i < len_left && j < len_right)
+    {
+        if(left[i] < right[j])
+            nums[k++] = left[i++];
+        else if(left[i] >= right[j])
+            nums[k++] = right[j++];
+    }
+
+    while(i < len_left)
+        nums[k++] = left[i++];
+    while(j < len_right)
+        nums[k++] = right[j++];
+
+    return cnt;
+}
+
+int partition(vector<int>& nums, int start, int end)
+{
+    if(start < end) 
+    {
+        int mid = (start + end) / 2;
+        partition(nums, start, mid);
+        partition(nums, mid + 1, end);
+
+        count += merge_and_count(nums, start, mid, end);
+    }
+}
+
+int count = 0;
+
+int reversePairs(vector<int>& nums) 
+{
+    partition(nums, 0, nums.size() - 1);   
+    return count;
+}
+
+/********************/
+/* 173. Binary Search Tree Iterator*/
+class BSTIterator {
+    stack<TreeNode*> st;
+
+public:
+    BSTIterator(TreeNode* root) {
+        push_all(root);
+    }
+    
+    /** @return the next smallest number */
+    int next() {
+        if(!st.empty()){
+            TreeNode *node = st.top();
+            st.pop();
+            push_all(node->right);
+            return node->val;
+        }
+
+        return 0;
+    }
+    
+    /** @return whether we have a next smallest number */
+    bool hasNext() {
+        return !st.empty(); 
+    }
+
+private:
+    void push_all(TreeNode *node)
+    {
+        while(NULL != node)
+        {
+            st.push(node);
+            node = node->left;
+        }
+    }
+};
+/********************/
+/* Find longest common substring*/
+int find_longest_comm_substr(const string& str1, const string& str2)
+{
+    if(str1.empty() || str2.empty())
+        return 0;
+
+    int len1 = str1.length(), len2 = str2.length();
+    int dp[len1][len2];
+    std::memset(dp, 0, sizeof(dp[0][0]) * len1 * len2);
+    int max = 0;
+
+    for(int i = 0; i < len1; i++)
+        if(str2[0] == str1[i])
+            dp[i][0] = 1;
+
+    for(int i = 0; i < len1; i++)
+        if(str1[0] == str2[i])
+            dp[0][i] = 1;
+    
+    for(int i = 1; i < len1; i++)
+    {
+        for(int j = 1; j < len2; j++)
+        {
+            if(str1[i] == str2[j])
+            {
+                dp[i][j] = dp[i - 1][j - 1] + 1;
+            }
+
+            if(dp[i][j] > max)
+                max = dp[i][j];
+        }
+    }
+
+    return max;
 }
 
 /********************/
