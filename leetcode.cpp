@@ -2527,6 +2527,107 @@ int find_longest_comm_substr(const string& str1, const string& str2)
 }
 
 /********************/
+/* 336. Palindrome Pairs*/
+vector<vector<int>> palindromePairs(vector<string>& words) 
+{
+    
+}
+
+/********************/
+/* 42. Trapping Rain Water*/
+int trap(vector<int>& height) 
+{
+    //brute force    
+    /*
+    int size = height.size();
+    int ans = 0;
+
+    for(int i = 1; i < size; i++)
+    {
+        int max_left = 0, max_right = 0;
+
+        for(int j = i; j >= 0; j--)
+            max_left = std::max(max_left, height[j]);
+        for(int j = i; j < size; j++)
+            max_right = std::max(max_right, height[j]);
+        
+        ans += (std::min(max_left, max_right) - height[i]);
+    }
+
+    return ans;*/
+    int size = height.size();
+    vector<int> left_max(size), right_max(size);
+    left_max[0] = height[0];
+    for(int i = 1; i < size; i++)
+        left_max[i] = std::max(height[i], left_max[i - 1]);
+
+    right_max[size - 1] = height[size - 1];
+    for(int i = size - 2; i >= 0; i--)
+        right_max[i] = std::max(height[i], right_max[i + 1]);
+    
+    int ans = 0;
+    for(int i = 1; i < size; i++)
+        ans += (std::min(left_max[i], right_max[i]) - height[i]);
+
+    return ans;
+}
+
+/********************/
+/* 146. LRU Cache*/
+class LRUCache {
+public:
+    LRUCache(int capacity) : capacity_(capacity) {
+        
+    }
+    
+    int get(int key) {
+        auto it = lru_map.find(key);        
+        if(it == lru_map.end())
+            return -1;
+
+        //放到链表的最前边
+        lru_list.emplace_front(it->second->first, it->second->second);
+        lru_list.erase(it->second);
+        lru_map[key] = lru_list.begin();
+
+        return it->second->second;
+    }
+    
+    void put(int key, int value) {
+        auto it = lru_map.find(key);        
+        if(it != lru_map.end()){
+            //放到链表的最前边
+            lru_list.emplace_front(it->second->first, value);
+            lru_list.erase(it->second);
+        }
+        else
+        {
+            if(capacity_ <= lru_map.size())
+            {
+                auto it_back = lru_list.back();
+                lru_map.erase(it_back.first);
+                lru_list.pop_back();
+            }
+
+            lru_list.emplace_front(key, value);
+            lru_map[key] = lru_list.begin();
+        }
+        
+    }
+
+private:
+
+private:
+    typedef list<pair<int,int>> LRUList;
+    typedef list<pair<int,int>>::iterator LRUListIterator;
+    typedef map<int, list<pair<int,int>>::iterator> LRUMap;
+
+    int capacity_;
+    LRUList lru_list;
+    LRUMap lru_map;
+};
+
+/********************/
 
 int main(int argc, char **argv)
 {
