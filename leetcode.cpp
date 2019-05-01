@@ -2626,6 +2626,35 @@ private:
     LRUList lru_list;
     LRUMap lru_map;
 };
+/********************/
+/* 62. Unique path*/
+int uniquePaths(int m, int n)
+{
+    /*vector<vector<int>> dp(m, vector<int>(n, 1));
+
+    for(int i = 1; i < m; i++)
+    {
+        for(int j = 1; j < n; j++)
+        {
+            dp[i][j] = dp[i - 1][j] + dp[i][j - 1];
+        }
+    }
+
+    return dp[m - 1][n - 1];*/
+    vector<int> prev(n, 1), cur(n, 1);
+    for (int i = 1; i < m; i++)
+    {
+        for (int j = 1; j < n; j++)
+        {
+            //cur[j] = prev[j] + cur[j - 1];
+            cur[j] += cur[j - 1];
+        }
+        //std::swap(prev, cur);
+    }
+
+    //return prev[n - 1];
+    return cur[n - 1];
+}
 
 /********************/
 
