@@ -2655,6 +2655,30 @@ int uniquePaths(int m, int n)
     //return prev[n - 1];
     return cur[n - 1];
 }
+/********************/
+/* 75. Sort Colors*/
+void sortColors(vector<int>& nums) 
+{
+    int n = nums.size();
+    int p0 = 0, cur = 0, p2 = n - 1;    
+
+    while(cur <= p2)
+    {
+        if(nums[cur] == 0)
+        {
+            std::swap(nums[cur], nums[p0]);
+            cur++;
+            p0++;
+        }
+        else if(nums[cur] == 2)
+        {
+            std::swap(nums[cur], nums[p2]);
+            p2--;
+        }
+        else
+            cur++;
+    }
+}
 
 /********************/
 
