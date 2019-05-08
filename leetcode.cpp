@@ -2681,6 +2681,113 @@ void sortColors(vector<int>& nums)
 }
 
 /********************/
+/* 50. Pow(x, n)*/
+double PowHelper(double x, long long n)
+{
+    if(0 == n)    
+        return 1;
+    if(1 == n)
+        return x;
+    double ans = myPow(x, n >> 1);
+    ans *= ans;
+
+    if(n & 0x1)
+        ans *= x;
+
+    return ans;
+}
+
+double myPow(double x, int n) 
+{
+    if(0 == x)
+        return 0;
+    if(0 == n)
+        return 1;
+    double ans = PowHelper(x, abs(n));
+    if(n < 0)
+        ans = 1.0 / ans;
+
+    return ans;
+}
+/********************/
+/* 21. Merge Two Sorted Lists*/
+ListNode* mergeTwoLists(ListNode* l1, ListNode* l2) 
+{
+    if(NULL == l1)
+        return l2;
+    if(NULL == l2)
+        return l1;
+    if(l1->val < l2->val)
+    {
+        l1->next = mergeTwoLists(l1->next, l2);
+        return l1;
+    }
+    else
+    {
+        l2->next = mergeTwoLists(l1, l2->next);
+        return l2;
+    }
+}
+/********************/
+/* 8. String to Integer (atoi)*/
+int myAtoi(string str) 
+{
+    if(str.empty())
+        return 0;
+    char first_ch = 0;
+    bool bNagative = false;
+    double ans = 0;
+    int i = 0;
+
+    for(; i < str.length(); i++)
+    {
+        char ch = str[i];
+        if(ch == ' ')
+            continue;
+        if(first_ch == 0) 
+            first_ch = ch;
+        if(first_ch < '0' || first_ch > '9')
+        {
+            if(first_ch != '+' && first_ch != '-')
+                return 0;
+            else 
+            {
+                if(first_ch == '-')
+                    bNagative = true;
+                i++;
+                break;
+            }
+        }
+        else
+            break;
+    }
+    
+    for(; i < str.length(); i++)
+    {
+        char ch = str[i];
+
+        if(ch >= '0' && ch <= '9')
+        {
+            double temp = ch - '0';
+            ans = ans * 10 + temp;
+        }
+        else
+        {
+            break;
+        }
+    }
+
+    if(ans > INT32_MAX && !bNagative)
+        ans = INT32_MAX;
+    else if(bNagative)
+    {
+        ans = -ans < INT32_MIN ? INT32_MIN : -ans;
+    }
+
+    return (int)ans;
+}
+
+/********************/
 
 int main(int argc, char **argv)
 {
