@@ -1351,6 +1351,28 @@ TreeNode *invertTree(TreeNode *root)
     return root;
 }
 
+TreeNode *invertTreeIterative(TreeNode *root){
+    if(NULL == root)
+        return root;
+    queue<TreeNode *> q;
+    q.push(root);
+
+    while(!q.empty()){
+        TreeNode *top = q.front();
+        TreeNode *temp = top->left;
+        top->left = top->right;
+        top->right = temp;
+        q.pop();
+
+        if(top->left)
+            q.push(top->left);
+        if(top->right)
+            q.push(top->right);
+    }
+
+    return root;
+}
+
 /********************/
 /* 543. Diameter of Binary Tree*/
 int calTreeNodeLen(TreeNode *root, int &max)
@@ -2786,9 +2808,401 @@ int myAtoi(string str)
 
     return (int)ans;
 }
+/********************/
+/* 145. Binary Tree Postorder Traversal*/
+vector<int> postorderTraversal(TreeNode* root) 
+{
+    vector<int> res;    
+    if(NULL == root)
+        return res;
+    stack<TreeNode*> st;
+    st.push(root);
+
+    while(!st.empty())
+    {
+        TreeNode *temp = st.top();
+        res.push_back(temp->val);
+        st.pop();
+
+        if(temp->left)
+            st.push(temp->left);
+        if(temp->right)
+            st.push(temp->right);
+    }
+
+    std::reverse(res.begin(), res.end());
+    return res;
+}
+/********************/
+/* 373. Find K Pairs with Smallest Sums*/
+struct compare
+{
+    bool operator()(pair<int,int>& p1, pair<int, int>& p2)
+    {
+        return p1.first + p1.second < p2.first + p2.second;
+    }
+};
+
+vector<vector<int>> kSmallestPairs(vector<int>& nums1, vector<int>& nums2, int k) 
+{
+    vector<vector<int>> ans;
+    if(nums1.size() == 0 || nums2.size() == 0)
+        return ans;
+
+    priority_queue<pair<int, int>, vector<pair<int,int>>, compare> pq; 
+    for(int i = 0; i < nums1.size(); i++)
+    {
+        for(int j = 0; j < nums2.size(); j++)
+        {
+            int sum = nums1[i] + nums2[j];
+            if(pq.size() >= k)
+            {
+                int sumTop = pq.top().first + pq.top().second;
+                if(sum < sumTop)
+                {
+                    pq.pop();
+                }
+                else
+                    continue;
+            }
+
+            pq.emplace(nums1[i], nums2[j]);
+        }
+    }
+
+    for(int i = 0 ; i < k; i++)
+    {
+        if(!pq.empty())
+        {
+            vector<int> tempAns;
+            pair<int,int> top = pq.top();
+            tempAns.emplace_back(top.first);
+            tempAns.emplace_back(top.second);
+            ans.emplace_back(tempAns);
+
+            pq.pop();
+        }
+    }
+
+    return ans;
+}
+/********************/
+/* 446. Arithmetic Slices II - Subsequence*/
+int numberOfArithmeticSlices(vector<int>& A){
+    int n = A.size(); 
+    int ans = 0;
+    vector<map<int,int>> dp;
+
+    for(int i = 1; i < n; i++)
+    {
+        for(int j = 0; j < i; j++)
+        {
+            int diff = A[i] - A[j];
+            int sum = 0;
+            if(dp[j].find(diff) != dp[j].end())
+                sum = dp[j][diff];
+            dp[i][diff] += sum + 1;
+            ans += sum;
+        }
+    }
+
+    return ans;
+} 
+/********************/
+/* 51. N-Queens*/
+class Solution2 {
+public:
+    vector<vector<string>> solveNQueens(int n) {
+        vector<vector<string>> res;    
+        vector<string> nQueen(n, std::string(n, '.'));
+        solveNQueens(res, nQueen, 0, n);
+
+        return res;
+    }
+private:
+    void solveNQueens(vector<vector<string>>& res, vector<string>& nQueen, int row, int& n) {
+        if(row == n)
+        {
+            res.push_back(nQueen);
+            return;
+        }
+
+        for(int i = 0; i < n; i++){
+            if(isValid(nQueen, row, i, n)){
+                nQueen[row][i] = 'Q';
+                solveNQueens(res, nQueen, row + 1, n);
+                nQueen[row][i] = '.';
+            }
+        }
+    }
+
+    bool isValid(vector<string>& nQueen, int row, int col, int& n){
+        for(int i = 0; i < row; i++)
+            if(nQueen[i][col] == 'Q')
+                return false;
+        for(int i = row - 1, j = col - 1; i >= 0 && j >= 0; j--, i--)
+            if(nQueen[i][j] == 'Q')
+                return false;
+        for(int i = row - 1, j = col + 1; i >= 0 && j < n; j++, i--)
+            if(nQueen[i][j] == 'Q')
+                return false;
+        
+        return true;
+    }
+};
+/********************/
+/* 572. Subtree of Another Tree*/
+bool isSubTreeEqual(TreeNode *s, TreeNode *t){
+    if(!s && !t)
+        return true;
+    else if(!s || !t)
+        return false;
+    
+    if(s->val == t->val)
+    {
+        return isSubTreeEqual(s->left, t->left) && isSubTreeEqual(s->right, t->right);
+    }
+
+    return false;
+}
+
+bool travel(TreeNode *s, TreeNode *t){
+    return s && (isSubTreeEqual(s, t) || travel(s->left, t) || travel(s->right, t));
+}
+
+bool isSubtree(TreeNode* s, TreeNode* t) {
+    return travel(s, t);
+}
 
 /********************/
+/* 240. Search a 2D Matrix II*/
+bool searchMatrix(vector<vector<int>>& matrix, int target) {
+    int row = matrix.size();
+    if(0 == row)
+        return false;
+    int col = matrix[0].size();    
+    if(0 == col)
+        return false;
+    
+    int i = 0, j = col - 1;
+    while(i < row && j >= 0)
+    {
+        if(matrix[i][j] == target)
+            return true;
+        else if(matrix[i][j] > target)
+            j--;
+        else if(matrix[i][j] < target)
+            i++;
+    }
 
+    return false;
+}
+/********************/
+/* 31. Next Permutation*/
+void nextPermutation(vector<int>& nums) {
+    int n = nums.size(), i, j;
+
+    for(i = n - 2; i >= 0; i--) {
+        if(nums[i] < nums[i + 1])
+            break;
+    }
+    if(i < 0){
+        std::reverse(nums.begin(), nums.end());
+    } else{
+        for(j = n - 1; j > i; j--)
+            if(nums[j] > nums[i])
+                break;
+        std::swap(nums[j], nums[i]);
+        std::reverse(nums.begin() + i + 1, nums.end());
+    }
+}
+/********************/
+/* 301. Remove Invalid Parentheses */
+void removeInvalidParHelper(string s, int last_i, int last_j, const string& strPair, vector<string>& ans){
+    int stack = 0;
+    for(int i = last_i; i < s.length(); i++){
+        if(s[i] == strPair[0])
+            stack++;
+        else if(s[i] == strPair[1])
+            stack--;
+        
+        if(stack >= 0)
+            continue;
+        for(int j = last_j; j <= i; j++) {
+            if(s[j] == strPair[1] && (j == last_j || s[j - 1] != strPair[1])) {
+                string strRemoved = s.substr(0, j) + s.substr(j + 1, s.length() - j - 1);
+                removeInvalidParHelper(strRemoved, i, j, strPair, ans);
+            }
+        }
+        return;
+    }
+
+    std::reverse(s.begin(), s.end());
+
+    if(strPair[0] == '(')
+        removeInvalidParHelper(s, 0, 0, ")(", ans);
+    else
+        ans.push_back(s);
+}
+
+vector<string> removeInvalidParentheses(string s) {
+   vector<string> ans; 
+   removeInvalidParHelper(s, 0, 0, "()", ans);
+   return ans;
+}
+/********************/
+/* 975. Odd Even Jump*/
+//Brute force(TIME LIMIT EXCEEDED)
+int find_next(vector<int>& A, int nCur, bool bOdd){
+    int targetIndex = -1;
+
+    if(bOdd){ //find smallest bigger
+        int targetValue = INT32_MAX;
+        for(int i = nCur + 1; i < A.size(); i++){
+            if(A[i] >= A[nCur]){
+                if(A[i] < targetValue) {
+                    targetValue = A[i];
+                    targetIndex = i;
+                }
+            }
+        }
+    }else{
+        int targetValue = INT32_MIN;
+        for(int i = nCur + 1; i < A.size(); i++){
+            if(A[i] <= A[nCur]){
+                if(A[i] > targetValue) {
+                    targetValue = A[i];
+                    targetIndex = i;
+                }
+            }
+        }
+    }
+
+    return targetIndex;
+}
+
+int oddEvenJumps(vector<int>& A) {
+    /* Brute force(TIME LIMIT EXCEEDED)
+    int ans = 0;
+
+    for(size_t i = 0; i < A.size(); i++){
+
+        int nJumpTime = 0;
+        int nCur = i;
+        while(true){
+            nJumpTime++;
+            nCur = find_next(A, nCur, nJumpTime & 1);
+            if(-1 == nCur)
+                break;
+            else if(A.size() - 1 == nCur){
+                ans++;
+                break;
+            }
+        }
+    }
+
+    return ans;*/
+    //Use DP
+    int ans = 0;
+    int n = A.size();
+    vector<int> dpHigher(n, 0), dpLower(n, 0);
+    map<int, int> mp;
+
+    dpHigher[n - 1] = dpLower[n - 1] = 1;
+    mp[A[n - 1]] = n - 1;
+
+    for(int i = n - 2; i >= 0; i--){
+        auto hi = mp.lower_bound(A[i]);
+        auto lo = mp.upper_bound(A[i]);
+        if(hi != mp.end())
+            dpHigher[i] = dpLower[hi->second];
+        if(lo != mp.begin())
+            dpLower[i] = dpHigher[(--lo)->second];
+        if(dpHigher[i])
+            ans++;
+        mp[A[i]] = i;
+    }
+
+    return ans;
+}
+/********************/
+/* 85. Maximal Rectangle*/
+struct PointInfo
+{
+    int sum_row;
+    int sum_col;
+};
+
+int maximalRectangle(vector<vector<char>>& matrix) {
+    if(matrix.size() == 0) 
+        return 0;
+
+    int row = matrix.size();
+    int col = matrix[0].size();
+    PointInfo dp[row][col];
+    return 0;
+}
+
+/********************/
+/* 287. Find the Duplicate Number*/
+int getRangeCount(vector<int>& nums, int start, int end) {
+    if(nums.size() == 0)
+        return 0;
+    int count = 0;
+    for(int i : nums){
+        if(i >= start && i <= end)
+            count++;
+    }
+
+    return count;
+}
+
+int findDuplicate(vector<int>& nums) {
+    if(0 == nums.size())    
+        return 0;
+    int n = nums.size();
+    int start = 1, end = n - 1;
+    while(start <= end){
+        int mid = ((end - start) >> 1) + start;
+        int countLeft = getRangeCount(nums, start, mid);
+        if(start == end){
+            if(countLeft > 1)
+                return start;
+            else
+                break;
+        }
+
+        if(countLeft > (mid - start + 1))
+            end = mid;
+        else
+            start = mid + 1;
+    }
+
+    return - 1;
+}
+/********************/
+/* 91. Decode Ways*/
+int numDecodings(string s) {
+    if(s.empty())
+        return 0;
+    int n = s.length();
+    vector<int> dp(n + 1, 0);
+    dp[0] = 1;
+    dp[1] = s[0] == '0' ? 0 : 1;
+
+    for(int i = 2; i <= n; i++){
+        if(s[i - 1] > '0' && s[i - 1] <= '9')
+            dp[i] += dp[i - 1];
+        string temp = s.substr(i - 2, 2);
+        int nTemp = std::atoi(temp.c_str());
+        if(nTemp >= 10 && nTemp <= 26)
+            dp[i] += dp[i - 2];
+    }
+
+    return dp[n];
+}
+
+/********************/
 int main(int argc, char **argv)
 {
     /*vector<int> arr = {2, 7, 11, 15};
