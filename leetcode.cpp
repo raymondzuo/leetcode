@@ -15,6 +15,7 @@
 #include <sstream>
 #include <deque>
 #include <list>
+#include <cmath>
 
 using std::cin;
 using std::cout;
@@ -3200,6 +3201,153 @@ int numDecodings(string s) {
     }
 
     return dp[n];
+}
+
+/********************/
+/* 895. Maximum Frequency Stack*/
+class FreqStack {
+private:
+    unordered_map<int, int> freq;
+    unordered_map<int, stack<int>> group;
+    int maxFreq;
+public:
+    FreqStack() {
+       maxFreq = 0; 
+    }
+    
+    void push(int x) {
+        maxFreq = std::max(maxFreq, ++freq[x]);
+        group[freq[x]].push(x);
+    }
+    
+    int pop() {
+       int x = group[maxFreq].top(); 
+       group[freq[x]--].pop();
+       if(group[freq[x]].size() == 0)
+            maxFreq--;
+       return x;
+    }
+};
+
+/********************/
+/* 26. Remove Duplicates from Sorted Array*/
+int removeDuplicates(vector<int>& nums) {
+    int n = nums.size();
+    if(0 == n)    
+        return 0;
+    int nLast = nums[0];
+    int cur = 1;
+    for(int i = 1; i < n; i++) {
+        if(nums[i] == nLast){
+            continue;
+        }else{
+            nLast = nums[i];
+            std::swap(nums[cur], nums[i]);
+            cur++;
+        }
+    }
+    
+    return cur;
+}
+
+/********************/
+/* 127. Word Ladder*/
+int ladderLength(string beginWord, string endWord, vector<string>& wordList) {
+    int size = wordList.size();
+    if(0 == size)
+        return 0;
+
+    unordered_set<string> myset(wordList.begin(), wordList.end());
+    queue<string> q;
+    q.push(beginWord);
+    int ans = 1;
+
+    while(!q.empty()){
+        int tempSize = q.size();
+        for(int i = 0; i < tempSize; i++){
+            string temp = q.front();
+            q.pop();
+
+            if(temp == endWord)
+                return ans;
+
+            myset.erase(temp);
+            
+            for(int j = 0; j < temp.size(); j++){
+                int c = temp[j];
+                for(int k = 0; k < 26; k++){
+                    temp[j] = k + 'a';
+                    if(myset.find(temp) != myset.end())
+                        q.push(temp);
+                }
+                temp[j] = c;
+            }
+        }
+        ans++;
+    }
+
+    return 0;
+}
+/********************/
+/* 341. Flatten Nested List Iterator*/
+class NestedInteger; 
+class NestedIterator {
+public:
+/*
+    NestedIterator(vector<NestedInteger> &nestedList) {
+       for(int i = nestedList.size() - 1; i >= 0; i--) {
+           st.push(nestedList[i]);
+       }
+    }
+
+    int next() {
+       if(hasNext()) 
+            return st.top().getInteger();
+       return NULL;    
+    }
+
+    bool hasNext() {
+        while(!st.empty()) {
+            auto x = st.top();
+            if(x.isInteger())
+                return true;
+            st.pop();
+            auto list = x.getList();
+            for(int i = list.size() - 1; i >= 0; i--){
+                st.push(list[i]);
+            }
+        }
+
+        reture false;
+    }
+
+private:
+    stack<NestedInteger> st;*/
+};
+/********************/
+/* 64. Minimum Path Sum*/
+int minPathSum(vector<vector<int>>& grid) {
+    int row = grid.size();
+    if(0 == row)
+        return 0;
+    int col = grid[0].size();
+    if(0 == col)
+        return 0;
+    vector<int> sumDp(col, 0);
+    
+    for(int i = 0; i < row; i++) {
+        for(int j = 0; j < col; j++) {
+            int up = i ? sumDp[j] : INT_MAX;
+            int left = j ? sumDp[j - 1] : INT_MAX;
+            if(i == 0 && j == 0) {
+                sumDp[0] = grid[0][0];
+                continue;
+            }
+            sumDp[j] = std::min(left, up) + grid[i][j];
+        }
+    }
+
+    return sumDp[col - 1];
 }
 
 /********************/
